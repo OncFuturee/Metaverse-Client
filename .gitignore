@@ -7,7 +7,9 @@
 .buildlog/
 .history
 
-
+# 新增：排除本地开发工具配置文件
+.vscode/
+.idea/
 
 # Flutter repo-specific
 /bin/cache/
