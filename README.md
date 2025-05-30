@@ -18,23 +18,57 @@ lib/
 │
 ├── core/                  # 核心框架（不变）
 │   ├── di/                # 依赖注入（服务注册）
+│   │   ├── injection_container.dart  # 全局服务注册
+│   │   └── service_locator.dart      # 服务定位器
+│   │
 │   ├── errors/            # 错误处理
+│   │   ├── failure.dart    # 统一错误类型
+│   │   └── error_handler.dart  # 错误处理器
+│   │
 │   ├── exceptions/        # 异常类型
 │   ├── utils/             # 工具类
+│   │   ├── logger.dart    # 日志工具
+│   │   └── network_info.dart  # 网络状态工具
+│   │
 │   ├── constants/         # 常量定义
 │   ├── registry/          # 模块注册表
+│   │   ├── feature_registry.dart  # 功能模块注册
+│   │   └── factory_registry.dart  # 工厂模式注册
+│   │
 │   └── event_bus/         # 事件总线（模块间通信）
+│       └── app_event_bus.dart  # 全局事件总线
 │
 ├── domain/                # 领域层（不变）
 │   ├── entities/          # 通用实体
+│   │   ├── user.dart      # 用户实体
+│   │   ├── video.dart     # 视频实体
+│   │   └── comment.dart   # 评论实体
+│   │
 │   ├── value_objects/     # 值对象
+│   │   ├── unique_id.dart  # 唯一ID
+│   │   └── email_address.dart  # 邮箱地址
+│   │
 │   └── shared/            # 共享业务逻辑
+│       └── use_case.dart  # 用例基类
 │
 ├── platform/              # 平台适配（不变）
 │   ├── base/              # 平台接口定义
+│   │   ├── file_service.dart     # 文件操作接口
+│   │   ├── cache_service.dart    # 缓存服务接口
+│   │   └── device_info.dart      # 设备信息接口
+│   │
 │   ├── android/           # Android 实现
+│   │   ├── file_service_android.dart  # 文件操作实现
+│   │   └── ...
+│   │
 │   ├── ios/               # iOS 实现
+│   │   ├── file_service_ios.dart  # 文件操作实现
+│   │   └── ...
+│   │
 │   ├── web/               # Web 实现
+│   │   ├── file_service_web.dart  # 文件操作实现
+│   │   └── ...
+│   │
 │   └── desktop/           # 桌面端实现
 │
 ├── features/              # 功能模块（横向扩展点）
@@ -46,8 +80,25 @@ lib/
 │   │
 │   ├── video_player/      # 视频播放模块
 │   │   ├── domain/        # 视频领域逻辑
+│   │   │   ├── entities/          # 视频相关实体
+│   │   │   ├── repositories/      # 仓库接口
+│   │   │   ├── use_cases/         # 用例（业务逻辑）
+│   │   │   └── video_failure.dart  # 视频模块错误类型
+│   │   │
 │   │   ├── data/          # 视频数据层
-│   │   ├── presentation/  # 视频UI
+│   │   │   ├── datasources/       # 数据源
+│   │   │   │   ├── local/         # 本地数据源
+│   │   │   │   └── remote/        # 远程数据源
+│   │   │   ├── models/            # 数据模型
+│   │   │   ├── repositories/      # 仓库实现
+│   │   │   └── video_mapper.dart  # 实体与模型映射
+│   │   │
+│   │   ├── presentation/  # 视频UI 表现层
+│   │   │   ├── screens/           # 页面
+│   │   │   ├── widgets/           # 组件
+│   │   │   ├── providers/         # 状态管理（Provider）
+│   │   │   └── routes/            # 路由
+│   │   │
 │   │   └── video_module.dart  # 模块注册
 │   │
 │   ├── social/            # 社交模块
@@ -59,96 +110,6 @@ lib/
 │   └── ...                # 未来可扩展模块（如直播、AR滤镜等）
 │
 └── main.dart              # 程序入口点
-```
-### 核心目录详解
-1. app/ - 应用全局配置
-```plaintext
-app/
-├── app.dart           # 应用入口点，初始化模块
-├── app_config.dart    # 应用配置（API地址、环境变量等）
-└── app_theme.dart     # 主题配置（亮色/暗色模式）
-```
-2. core/ - 核心框架
-```plaintext
-core/
-├── di/                # 依赖注入
-│   ├── injection_container.dart  # 全局服务注册
-│   └── service_locator.dart      # 服务定位器
-│
-├── errors/            # 错误处理
-│   ├── failure.dart    # 统一错误类型
-│   └── error_handler.dart  # 错误处理器
-│
-├── registry/          # 模块注册表
-│   ├── feature_registry.dart  # 功能模块注册
-│   └── factory_registry.dart  # 工厂模式注册
-│
-├── event_bus/         # 事件总线
-│   └── app_event_bus.dart  # 全局事件总线
-│
-└── utils/             # 工具类
-    ├── logger.dart    # 日志工具
-    └── network_info.dart  # 网络状态工具
-```
-3. domain/ - 领域层
-```plaintext
-domain/
-├── entities/          # 通用实体（跨模块共享）
-│   ├── user.dart      # 用户实体
-│   ├── video.dart     # 视频实体
-│   └── comment.dart   # 评论实体
-│
-├── value_objects/     # 值对象
-│   ├── unique_id.dart  # 唯一ID
-│   └── email_address.dart  # 邮箱地址
-│
-└── shared/            # 共享业务逻辑
-    └── use_case.dart  # 用例基类
-```
-4. platform/ - 平台适配
-```plaintext
-platform/
-├── base/              # 平台接口定义
-│   ├── file_service.dart     # 文件操作接口
-│   ├── cache_service.dart    # 缓存服务接口
-│   └── device_info.dart      # 设备信息接口
-│
-├── android/           # Android 实现
-│   ├── file_service_android.dart  # 文件操作实现
-│   └── ...
-│
-├── ios/               # iOS 实现
-│   ├── file_service_ios.dart  # 文件操作实现
-│   └── ...
-│
-└── web/               # Web 实现
-    ├── file_service_web.dart  # 文件操作实现
-    └── ...
-```
-#### 功能模块结构（以video_player为例）
-```plaintext
-features/video_player/
-├── domain/                # 领域层
-│   ├── entities/          # 视频相关实体
-│   ├── repositories/      # 仓库接口
-│   ├── use_cases/         # 用例（业务逻辑）
-│   └── video_failure.dart  # 视频模块错误类型
-│
-├── data/                  # 数据层
-│   ├── datasources/       # 数据源
-│   │   ├── local/         # 本地数据源
-│   │   └── remote/        # 远程数据源
-│   ├── models/            # 数据模型
-│   ├── repositories/      # 仓库实现
-│   └── video_mapper.dart  # 实体与模型映射
-│
-├── presentation/          # 表现层
-│   ├── screens/           # 页面
-│   ├── widgets/           # 组件
-│   ├── providers/         # 状态管理（Provider）
-│   └── routes/            # 路由
-│
-└── video_module.dart      # 模块注册
 ```
 #### 模块注册示例
 ```dart
