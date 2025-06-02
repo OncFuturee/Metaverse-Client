@@ -69,7 +69,8 @@ lib/
 │   │   ├── file_service_web.dart  # 文件操作实现
 │   │   └── ...
 │   │
-│   └── desktop/           # 桌面端实现
+│   ├── linux/             # linux 实现
+│   └── windows/           # windows 实现
 │
 ├── features/              # 功能模块（横向扩展点）
 │   ├── auth/              # 认证模块

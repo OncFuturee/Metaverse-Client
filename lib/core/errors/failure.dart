@@ -11,10 +11,9 @@ abstract class Failure extends Equatable {
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure({required String message}) : super(message: message);
+  const NetworkFailure({required super.message});
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure({required String message, String? code}) 
-      : super(message: message, code: code);
+  const ServerFailure({required super.message, super.code});
 }

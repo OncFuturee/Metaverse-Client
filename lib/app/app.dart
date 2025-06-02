@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_theme.dart';
 
 class MetaverseApp extends StatelessWidget {
-  const MetaverseApp({Key? key}) : super(key: key);
+  const MetaverseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
