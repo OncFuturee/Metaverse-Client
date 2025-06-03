@@ -10,6 +10,8 @@ class MetaverseApp extends StatelessWidget {
       title: 'Metaverse',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system, // 根据系统设置自动切换主题
+      
       // TODO: 添加路由配置
     );
   }
