@@ -8,7 +8,7 @@ abstract class FeatureModule {
   void init();
 
   /// 模块提供的路由配置
-  List<Route> get routes;
+  Map<String, Widget Function(BuildContext)> get routes;
 
   /// 可选：模块销毁时的清理操作
   void dispose() {}
@@ -22,8 +22,14 @@ class FeatureRegistry {
     module.init(); // 初始化模块
   }
 
-  static List<Route> getAllRoutes() {
-    return _modules.expand((module) => module.routes).toList();
+  static Map<String, Widget Function(BuildContext)> getAllRoutes() {
+    return _modules.fold<Map<String, Widget Function(BuildContext)>>(
+          {},
+          (Map<String, Widget Function(BuildContext)> acc, module) {
+            acc.addAll(module.routes);
+            return acc;
+          },
+        );
   }
 
   static void disposeAll() {

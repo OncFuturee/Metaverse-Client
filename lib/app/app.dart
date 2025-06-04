@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/core/registry/feature_registry.dart';
 import 'app_theme.dart';
 
 class MetaverseApp extends StatelessWidget {
@@ -11,8 +12,8 @@ class MetaverseApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system, // 根据系统设置自动切换主题
-      
-      // TODO: 添加路由配置
+      // 路由
+      routes: FeatureRegistry.getAllRoutes(),
     );
   }
 }

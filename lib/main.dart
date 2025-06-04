@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:metaverse_client/core/di/register_module.dart';
+import 'package:metaverse_client/core/registry/register_module.dart';
 import 'app/app.dart';
 import 'core/di/injection_container.dart';
 
