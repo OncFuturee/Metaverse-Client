@@ -27,6 +27,9 @@ class FeatureRegistry {
   }
 
   static void disposeAll() {
-    _modules.forEach((module) => module.dispose());
+    // 销毁所有模块
+    for (var module in _modules) {
+      module.dispose();
+    }
   }
 }
