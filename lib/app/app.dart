@@ -12,6 +12,7 @@ class MetaverseApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system, // 根据系统设置自动切换主题
+      home: ,
       // 路由
       routes: FeatureRegistry.getAllRoutes(),
     );

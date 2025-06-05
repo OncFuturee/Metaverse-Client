@@ -13,10 +13,10 @@ class VideoModule implements FeatureModule {
   }
 
   @override
-  List<Route> get routes => [
+  Map<String, Widget Function(BuildContext)> get routes => {
     // 在这里定义视频播放器相关的路由
     // MaterialPageRoute(builder: (context) => VideoPlayerPage()),
-  ];
+  };
 
   @override
   void dispose() {
