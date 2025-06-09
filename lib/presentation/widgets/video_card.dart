@@ -22,7 +22,7 @@ class VideoCard extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: CircleAvatar(backgroundImage: NetworkImage(video.authorAvatar)),
+            leading: CircleAvatar(backgroundImage: NetworkImage(video.authorAvatar), radius: 15,),
             title: Text(video.title, maxLines: 1, overflow: TextOverflow.ellipsis),
             subtitle: Text(video.authorName),
             trailing: Icon(Icons.more_vert),

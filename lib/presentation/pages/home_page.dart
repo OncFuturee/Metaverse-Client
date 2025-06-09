@@ -86,13 +86,13 @@ class HomePage extends StatelessWidget {
                         // 计算每个卡片的最大宽度，手机两列，宽屏自适应多列
                         double maxCardWidth = 220;
                         int crossAxisCount = (constraints.maxWidth / maxCardWidth).floor().clamp(2, 6);
-                        double childAspectRatio = 16 / 14; // 宽高比
+                        double childAspectRatio = 16 / 15; // 宽高比
                         return GridView.builder(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 6,
+                            mainAxisSpacing: 6,
                             childAspectRatio: childAspectRatio,
                           ),
                           itemCount: vm.videos.length,
