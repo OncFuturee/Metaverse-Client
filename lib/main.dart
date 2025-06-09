@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:metaverse_client/core/registry/register_module.dart';
-import 'app/app.dart';
-import 'core/di/injection_container.dart';
+import 'package:provider/provider.dart';
+import 'injection.dart';
+import 'presentation/pages/main_page.dart';
+import 'presentation/viewmodels/home_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HomeViewModel()),
+      ],
+      child: const MetaverseApp(),
+    ),
+  );
+}
 
-  await initCore(); // 初始化核心服务和依赖
+class MetaverseApp extends StatelessWidget {
+  const MetaverseApp({super.key});
 
-  registerModule(); // 注册模块
-
-  runApp(const MetaverseApp());
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'metaverse_client',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MainPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }

@@ -30,8 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  # 核心依赖
+  provider: ^6.1.5
   get_it: ^7.6.7
   equatable: ^2.0.5
   event_bus: ^2.0.0
