@@ -3,11 +3,13 @@ import '../../domain/entities/video.dart';
 
 class VideoCard extends StatelessWidget {
   final Video video;
-  const VideoCard({super.key, required this.video});
+  final double coverAspectRatio;
+  const VideoCard({super.key, required this.video, required this.coverAspectRatio});
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.transparent,
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,6 +24,9 @@ class VideoCard extends StatelessWidget {
             ),
           ),
           ListTile(
+            dense: true,
+            tileColor: Colors.transparent,
+            contentPadding: EdgeInsets.symmetric(horizontal: 6),
             leading: CircleAvatar(backgroundImage: NetworkImage(video.authorAvatar), radius: 15,),
             title: Text(video.title, maxLines: 1, overflow: TextOverflow.ellipsis),
             subtitle: Text(video.authorName),

@@ -83,20 +83,29 @@ class HomePage extends StatelessWidget {
                     onRefresh: () => vm.fetchVideos(),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
+                        const double padding = 10; // 布局的内边距
                         // 计算每个卡片的最大宽度，手机两列，宽屏自适应多列
-                        double maxCardWidth = 220;
+                        double maxCardWidth = 220; // 卡片最大宽度
                         int crossAxisCount = (constraints.maxWidth / maxCardWidth).floor().clamp(2, 6);
-                        double childAspectRatio = 16 / 15; // 宽高比
+                        double crossAxisSpacing = 6; // 列间距
+                        double mainAxisSpacing = 6; // 行间距
+                        double coverAspectRatio = 16 / 9; // 封面宽高比
+                        double cardWidth = (constraints.maxWidth - padding * 2 - crossAxisSpacing * (crossAxisCount - 1)) / crossAxisCount;
+                        double coverHeight = cardWidth / coverAspectRatio; // 封面高度
+                        double listTileHeight = 60; // 列表项高度
+                        double cardAspectRatio = cardWidth / (coverHeight + listTileHeight); // 卡片宽高比
                         return GridView.builder(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(padding),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 6,
-                            mainAxisSpacing: 6,
-                            childAspectRatio: childAspectRatio,
+                            crossAxisSpacing: crossAxisSpacing,
+                            mainAxisSpacing: mainAxisSpacing,
+                            childAspectRatio: cardAspectRatio,
                           ),
                           itemCount: vm.videos.length,
-                          itemBuilder: (ctx, i) => VideoCard(video: vm.videos[i]),
+                          itemBuilder: (ctx, i) => VideoCard(
+                            video: vm.videos[i],
+                            coverAspectRatio: coverAspectRatio,),
                         );
                       },
                     ),
