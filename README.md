@@ -4,6 +4,7 @@ lib/
 ├── core/                 # 核心模块：配置、常量、日志、网络等
 │   ├── config/           # 应用配置
 │   ├── constants/        # 常量定义
+│   ├── services/         # 系统服务
 │   ├── utils/            # 工具类
 │   └── network/          # 网络请求封装
 ├── data/                 # 数据层：模型、数据源、仓库
