@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:metaverse_client/data/datasources/local_category_datasource.dart';
-import 'package:metaverse_client/data/models/category_item.dart';
 import 'package:metaverse_client/domain/entities/category_entity.dart';
 import 'package:metaverse_client/domain/repositories/category_repository.dart';
 

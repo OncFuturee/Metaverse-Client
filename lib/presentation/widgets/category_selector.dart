@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/domain/entities/category_entity.dart';
 import 'package:provider/provider.dart';
 import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart';
 
@@ -25,143 +26,136 @@ class CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CategoryViewModel(
-        getCategoriesUseCase: Provider.of<GetCategories>(context, listen: false),
-        saveCategoriesUseCase: Provider.of<SaveCategories>(context, listen: false),
-        storageKey: storageKey,
-      ),
-      child: Consumer<CategoryViewModel>(
-        builder: (context, viewModel, _) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 主容器
-              Container(
-                key: GlobalKey(),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      viewModel.calculateVisibleCategories(
-                        constraints.maxWidth,
-                        iconSize,
-                        spacing,
-                      );
-                    });
-                    
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          // 可见的类别标签
-                          ...viewModel.visibleCategories.map((cat) => _buildCategoryTag(
-                            context,
-                            cat,
-                            viewModel,
-                          )).toList(),
-                          
-                          // 展开按钮
-                          if (viewModel.hiddenCategories.isNotEmpty)
-                            GestureDetector(
-                              onTap: viewModel.toggleExpanded,
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: spacing),
-                                padding: EdgeInsets.all(spacing),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(borderRadius),
-                                ),
-                                child: Icon(
-                                  viewModel.isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                                  size: iconSize,
-                                  color: Colors.grey,
-                                ),
+    return Consumer<CategoryViewModel>(
+      builder: (context, viewModel, _) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 主容器
+            Container(
+              key: GlobalKey(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    viewModel.calculateVisibleCategories(
+                      constraints.maxWidth,
+                      iconSize,
+                      spacing,
+                    );
+                  });
+                  
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        // 可见的类别标签
+                        ...viewModel.visibleCategories.map((cat) => _buildCategoryTag(
+                          context,
+                          cat,
+                          viewModel,
+                        )).toList(),
+                        
+                        // 展开按钮
+                        if (viewModel.hiddenCategories.isNotEmpty)
+                          GestureDetector(
+                            onTap: viewModel.toggleExpanded,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: spacing),
+                              padding: EdgeInsets.all(spacing),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(borderRadius),
+                              ),
+                              child: Icon(
+                                viewModel.isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                size: iconSize,
+                                color: Colors.grey,
                               ),
                             ),
-                        ],
-                      ),
-                    );
-                  },
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            
+            // 展开的面板
+            if (viewModel.isExpanded)
+              Container(
+                margin: EdgeInsets.only(top: spacing),
+                padding: EdgeInsets.all(spacing),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Wrap(
+                  spacing: spacing,
+                  runSpacing: spacing,
+                  children: [
+                    ...viewModel.categories.map((cat) {
+                      final isVisible = viewModel.visibleCategories.any((vc) => vc.title == cat.title);
+                      
+                      return GestureDetector(
+                        onTap: () {
+                          if (isVisible) {
+                            viewModel.selectCategory(cat);
+                          } else {
+                            viewModel.addToVisibleList(cat.title);
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: spacing * 2,
+                            vertical: spacing,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isVisible 
+                                ? (cat.isSelected ? selectedColor.withOpacity(0.2) : Colors.grey.withOpacity(0.1))
+                                : Colors.grey.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(borderRadius),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                cat.title,
+                                style: TextStyle(
+                                  color: isVisible 
+                                      ? (cat.isSelected ? selectedColor : unselectedColor)
+                                      : unselectedColor,
+                                ),
+                              ),
+                              if (isVisible)
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.close,
+                                    size: iconSize * 0.7,
+                                    color: deleteIconColor,
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                  onPressed: () => viewModel.removeFromVisibleList(cat.title),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ],
                 ),
               ),
-              
-              // 展开的面板
-              if (viewModel.isExpanded)
-                Container(
-                  margin: EdgeInsets.only(top: spacing),
-                  padding: EdgeInsets.all(spacing),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(borderRadius),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Wrap(
-                    spacing: spacing,
-                    runSpacing: spacing,
-                    children: [
-                      ...viewModel.categories.map((cat) {
-                        final isVisible = viewModel.visibleCategories.any((vc) => vc.title == cat.title);
-                        
-                        return GestureDetector(
-                          onTap: () {
-                            if (isVisible) {
-                              viewModel.selectCategory(cat);
-                            } else {
-                              viewModel.addToVisibleList(cat.title);
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: spacing * 2,
-                              vertical: spacing,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isVisible 
-                                  ? (cat.isSelected ? selectedColor.withOpacity(0.2) : Colors.grey.withOpacity(0.1))
-                                  : Colors.grey.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(borderRadius),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  cat.title,
-                                  style: TextStyle(
-                                    color: isVisible 
-                                        ? (cat.isSelected ? selectedColor : unselectedColor)
-                                        : unselectedColor,
-                                  ),
-                                ),
-                                if (isVisible)
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.close,
-                                      size: iconSize * 0.7,
-                                      color: deleteIconColor,
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                    constraints: BoxConstraints(),
-                                    onPressed: () => viewModel.removeFromVisibleList(cat.title),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ),
-            ],
-          );
-        },
-      ),
+          ],
+        );
+      },
     );
   }
 

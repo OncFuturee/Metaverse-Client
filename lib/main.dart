@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'injection.dart';
 import 'presentation/pages/main_page.dart';
@@ -11,6 +12,10 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => CategoryViewModel( 
+          categoryUsecases: getIt(),
+          storageKey: 'categories',
+        )),
       ],
       child: const MetaverseApp(),
     ),

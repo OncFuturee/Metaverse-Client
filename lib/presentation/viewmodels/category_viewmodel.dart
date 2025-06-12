@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:metaverse_client/domain/entities/category_entity.dart';
-import 'package:metaverse_client/domain/usecases/get_categories.dart';
-import 'package:metaverse_client/domain/usecases/save_categories.dart';
+import 'package:metaverse_client/domain/usecases/category_usecases.dart';
 
 // 分类视图模型
 class CategoryViewModel extends ChangeNotifier {
-  final GetCategories getCategoriesUseCase;
-  final SaveCategories saveCategoriesUseCase;
+  final CategoryUsecases categoryUsecases;
   final String storageKey;
 
   List<CategoryEntity> _categories = [];
@@ -15,8 +12,7 @@ class CategoryViewModel extends ChangeNotifier {
   bool _isExpanded = false;
 
   CategoryViewModel({
-    required this.getCategoriesUseCase,
-    required this.saveCategoriesUseCase,
+    required this.categoryUsecases,
     required this.storageKey,
   }) {
     _init();
@@ -34,15 +30,17 @@ class CategoryViewModel extends ChangeNotifier {
       _categories.where((cat) => !_visibleCategories.contains(cat.title)).toList();
 
   // 获取选中的分类
-  CategoryEntity? get selectedCategory => 
-      _categories.firstWhere((cat) => cat.isSelected, orElse: () => _categories.isEmpty ? null : _categories[0]);
+  CategoryEntity? get selectedCategory {
+    if (_categories.isEmpty) return null;
+    return _categories.firstWhere((cat) => cat.isSelected, orElse: () => _categories[0]);
+  }
 
   // 是否展开
   bool get isExpanded => _isExpanded;
 
   // 初始化
   Future<void> _init() async {
-    final result = await getCategoriesUseCase.execute();
+    final result = await categoryUsecases.getCategories();
     result.fold(
       (failure) {
         print('Failed to load categories: $failure');
@@ -63,6 +61,16 @@ class CategoryViewModel extends ChangeNotifier {
         _visibleCategories = _categories.where((cat) => cat.isVisible).map((cat) => cat.title).toList();
       },
     );
+    print("创建分类视图模型，初始分类数量: ${_categories.length}");
+    _categories = [
+          CategoryEntity(title: "科技", isSelected: true, isVisible: true, link: "/tech"),
+          CategoryEntity(title: "体育", isSelected: false, isVisible: true, link: "/sports"),
+          CategoryEntity(title: "娱乐", isSelected: false, isVisible: true, link: "/entertainment"),
+          CategoryEntity(title: "财经", isSelected: false, isVisible: false, link: "/finance"),
+          CategoryEntity(title: "健康", isSelected: false, isVisible: false, link: "/health"),
+          CategoryEntity(title: "教育", isSelected: false, isVisible: false, link: "/education"),
+        ];
+        _visibleCategories = _categories.where((cat) => cat.isVisible).map((cat) => cat.title).toList();
     notifyListeners();
   }
 
@@ -122,7 +130,7 @@ class CategoryViewModel extends ChangeNotifier {
 
   // 保存分类
   Future<void> _saveCategories() async {
-    await saveCategoriesUseCase.execute(_categories);
+    await categoryUsecases.saveCategories(_categories);
   }
 
   // 切换展开/折叠状态

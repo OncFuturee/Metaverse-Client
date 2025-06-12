@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/presentation/widgets/category_selector.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/home_viewmodel.dart';
 import '../widgets/video_card.dart';
@@ -53,26 +54,16 @@ class HomePage extends StatelessWidget {
           // 分类栏
           SizedBox(
             height: 38,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: vm.categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (ctx, i) {
-                final cat = vm.categories[i];
-                final selected = cat == vm.currentCategory;
-                return GestureDetector(
-                  onTap: () => vm.fetchVideos(category: cat),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: selected ? Colors.blue : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Text(cat, style: TextStyle(color: selected ? Colors.white : Colors.black)),
-                  ),
-                );
-              },
+            width: double.infinity,
+            child: CategorySelector(
+              storageKey: 'my_categories',
+              // 可选配置参数
+              selectedColor: Colors.blue,
+              unselectedColor: Colors.grey,
+              deleteIconColor: Colors.red,
+              borderRadius: 16.0,
+              iconSize: 24.0,
+              spacing: 8.0,
             ),
           ),
           // 视频区
