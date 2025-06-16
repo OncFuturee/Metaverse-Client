@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
           ),
           // 分类栏
           SizedBox(
-            height: 38,
+            height: 40,
             width: double.infinity,
             child: CategorySelector(
               storageKey: 'my_categories',
