@@ -106,6 +106,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                                   _removeOverlay();
                                 } else {
                                   viewModel.addToVisibleList(cat.title);
+                                  setState(()=>{}); // 立即刷新面板，显示删除按钮
                                 }
                               },
                               child: Container(
@@ -120,6 +121,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                                   borderRadius: BorderRadius.circular(widget.borderRadius),
                                 ),
                                 child: Stack(
+                                  alignment: Alignment.centerLeft,
                                   children: [
                                     Text(
                                       cat.title,
@@ -137,6 +139,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                                         child: GestureDetector(
                                           onTap: (() {
                                             viewModel.removeFromVisibleList(cat.title);
+                                            setState(() {}); // 立即刷新面板，移除icon
                                           }),
                                           child: Container(
                                             width: widget.iconSize * 0.8,
@@ -151,6 +154,17 @@ class _CategorySelectorState extends State<CategorySelector> {
                                               color: Colors.white,
                                             ),
                                           ),
+                                        ),
+                                      ),
+                                    // 新增：在不可见类别被添加后，立即刷新面板以显示删除icon
+                                    if (!isVisible)
+                                      Positioned.fill(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            viewModel.addToVisibleList(cat.title);
+                                            setState(() {}); // 立即刷新面板，显示icon
+                                          },
+                                          behavior: HitTestBehavior.translucent,
                                         ),
                                       ),
                                   ],

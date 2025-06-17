@@ -9,6 +9,7 @@ class LocalCategoryDatasource {
   LocalCategoryDatasource(this.sharedPreferences);
   
   // 保存分类到本地存储
+  // TODO: 使用core核心中的cache服务
   Future<void> saveCategories(List<CategoryItem> categories, String key) async {
     final jsonList = categories.map((cat) => cat.toMap()).toList();
     await sharedPreferences.setString(key, json.encode(jsonList));
