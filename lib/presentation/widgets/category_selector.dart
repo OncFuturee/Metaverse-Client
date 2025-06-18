@@ -106,6 +106,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                                   //if (cat.isSelected) return;
                                   //viewModel.selectCategory(cat);
                                   //_removeOverlay();
+                                  
                                 } else {
                                   viewModel.addToVisibleList(cat.title);
                                   _overlayEntry?.markNeedsBuild(); // 刷新Overlay内容
