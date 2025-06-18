@@ -63,7 +63,7 @@ class _CategorySelectorState extends State<CategorySelector> {
   // 显示悬浮面板
   void _showOverlay(BuildContext context, CategoryViewModel viewModel) {
     _removeOverlay();
-    
+
     _overlayEntry = OverlayEntry(
       builder: (BuildContext context) {
         return GestureDetector(
@@ -98,15 +98,17 @@ class _CategorySelectorState extends State<CategorySelector> {
                         children: [
                           ...viewModel.categories.map((cat) {
                             final isVisible = viewModel.visibleCategories.any((vc) => vc.title == cat.title);
-                            
+
                             return GestureDetector(
                               onTap: () {
                                 if (isVisible) {
-                                  viewModel.selectCategory(cat);
-                                  _removeOverlay();
+                                  // 如果已经选中则不响应
+                                  //if (cat.isSelected) return;
+                                  //viewModel.selectCategory(cat);
+                                  //_removeOverlay();
                                 } else {
                                   viewModel.addToVisibleList(cat.title);
-                                  setState(()=>{}); // 立即刷新面板，显示删除按钮
+                                  _overlayEntry?.markNeedsBuild(); // 刷新Overlay内容
                                 }
                               },
                               child: Container(
@@ -131,7 +133,6 @@ class _CategorySelectorState extends State<CategorySelector> {
                                             : widget.unselectedColor,
                                       ),
                                     ),
-                                    // 只在可见类别上显示删除按钮
                                     if (isVisible)
                                       Positioned(
                                         top: -4,
@@ -139,7 +140,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                                         child: GestureDetector(
                                           onTap: (() {
                                             viewModel.removeFromVisibleList(cat.title);
-                                            setState(() {}); // 立即刷新面板，移除icon
+                                            _overlayEntry?.markNeedsBuild(); // 刷新Overlay内容
                                           }),
                                           child: Container(
                                             width: widget.iconSize * 0.8,
@@ -156,22 +157,11 @@ class _CategorySelectorState extends State<CategorySelector> {
                                           ),
                                         ),
                                       ),
-                                    // 新增：在不可见类别被添加后，立即刷新面板以显示删除icon
-                                    if (!isVisible)
-                                      Positioned.fill(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            viewModel.addToVisibleList(cat.title);
-                                            setState(() {}); // 立即刷新面板，显示icon
-                                          },
-                                          behavior: HitTestBehavior.translucent,
-                                        ),
-                                      ),
                                   ],
                                 ),
                               ),
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ),
