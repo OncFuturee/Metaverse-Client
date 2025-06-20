@@ -52,6 +52,8 @@ class CategoryViewModel extends ChangeNotifier {
           CategoryEntity(title: "财经", isSelected: false, isVisible: false, link: "/finance"),
           CategoryEntity(title: "健康", isSelected: false, isVisible: false, link: "/health"),
           CategoryEntity(title: "教育", isSelected: false, isVisible: false, link: "/education"),
+          CategoryEntity(title: "我练功发自真心", isSelected: false, isVisible: false, link: "/education"),
+          CategoryEntity(title: "哇哈哈", isSelected: false, isVisible: false, link: "/education"),
         ];
         _visibleCategories = _categories.where((cat) => cat.isVisible).map((cat) => cat.title).toList();
         _saveCategories();

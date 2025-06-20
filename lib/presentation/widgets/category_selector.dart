@@ -5,18 +5,35 @@ import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart
 
 // 分类选择器组件
 class CategorySelector extends StatefulWidget {
-  final double borderRadius; // 圆角半径
-  final double iconSize; // 图标大小
-  final double spacing; // 标签间距
-  final Color selectedColor; // 选中颜色
-  final Color unselectedColor; // 未选中颜色
-  final Color deleteIconColor; // 删除图标颜色
-  final String storageKey; // 存储键，用于持久化类别状态
+  /// 圆角半径
+  final double borderRadius;
+
+  /// 删除图标大小
+  final double deleteIconSize;
+
+  /// 拓展图标大小
+  final double expandIconSize;
+
+  /// 标签间距
+  final double spacing;
+
+  /// 选中颜色
+  final Color selectedColor;
+
+  /// 未选中颜色
+  final Color unselectedColor;
+
+  /// 删除图标颜色
+  final Color deleteIconColor;
+
+  /// 存储键，用于持久化类别状态
+  final String storageKey;
 
   const CategorySelector({
     Key? key,
     this.borderRadius = 16.0,
-    this.iconSize = 24.0,
+    this.deleteIconSize = 20.0,
+    this.expandIconSize = 20.0,
     this.spacing = 8.0,
     this.selectedColor = Colors.blue,
     this.unselectedColor = Colors.grey,
@@ -34,11 +51,18 @@ class _CategorySelectorState extends State<CategorySelector> {
   double _headerHeight = 0;
   double _headerTop = 0;
 
+  // 用于获取每个标签的Key，以便计算指示器位置
+  final Map<String, GlobalKey> _tagKeys = {};
+  double _indicatorLeft = 0;
+  double _indicatorWidth = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getHeaderPosition();
+      _updateIndicatorPosition(
+          Provider.of<CategoryViewModel>(context, listen: false));
     });
   }
 
@@ -50,14 +74,47 @@ class _CategorySelectorState extends State<CategorySelector> {
 
   // 获取头部组件位置信息
   void _getHeaderPosition() {
-    final RenderBox renderBox = _headerKey.currentContext?.findRenderObject() as RenderBox;
+    final RenderBox renderBox =
+        _headerKey.currentContext?.findRenderObject() as RenderBox;
     final size = renderBox.size;
     final position = renderBox.localToGlobal(Offset.zero);
-    
+
     setState(() {
       _headerHeight = size.height;
       _headerTop = position.dy;
     });
+  }
+
+  // 更新指示器位置和宽度
+  void _updateIndicatorPosition(CategoryViewModel viewModel) {
+    final selectedCategory = viewModel.visibleCategories.firstWhereOrNull(
+      (cat) => cat.isSelected,
+    );
+
+    if (selectedCategory != null &&
+        _tagKeys[selectedCategory.title]?.currentContext != null) {
+      final RenderBox renderBox = _tagKeys[selectedCategory.title]!
+          .currentContext!
+          .findRenderObject() as RenderBox;
+      final size = renderBox.size;
+      final position = renderBox.localToGlobal(Offset.zero);
+
+      // 获取SingleChildScrollView的全局位置
+      final RenderBox? scrollBox = context.findRenderObject() as RenderBox?;
+      if (scrollBox == null) return;
+      final scrollPosition = scrollBox.localToGlobal(Offset.zero);
+
+      setState(() {
+        _indicatorLeft = position.dx - scrollPosition.dx;
+        _indicatorWidth = size.width;
+      });
+    } else {
+      // 如果没有选中的类别或者找不到对应的key，则隐藏指示器
+      setState(() {
+        _indicatorLeft = 0;
+        _indicatorWidth = 0;
+      });
+    }
   }
 
   // 显示悬浮面板
@@ -97,62 +154,89 @@ class _CategorySelectorState extends State<CategorySelector> {
                         runSpacing: widget.spacing,
                         children: [
                           ...viewModel.categories.map((cat) {
-                            final isVisible = viewModel.visibleCategories.any((vc) => vc.title == cat.title);
+                            final isVisible = viewModel.visibleCategories
+                                .any((vc) => vc.title == cat.title);
+                            final isSelected = cat.isSelected;
 
                             return GestureDetector(
                               onTap: () {
-                                if (isVisible) {
-                                  // 如果已经选中则不响应
-                                  //if (cat.isSelected) return;
-                                  //viewModel.selectCategory(cat);
-                                  //_removeOverlay();
-                                  
-                                } else {
+                                if (!isVisible) {
                                   viewModel.addToVisibleList(cat.title);
-                                  _overlayEntry?.markNeedsBuild(); // 刷新Overlay内容
+                                  _overlayEntry?.markNeedsBuild();
                                 }
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: widget.spacing * 2,
-                                  vertical: widget.spacing,
-                                ),
                                 decoration: BoxDecoration(
-                                  color: isVisible 
-                                      ? (cat.isSelected ? widget.selectedColor.withOpacity(0.2) : Colors.grey.withOpacity(0.1))
-                                      : Colors.grey.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                                  color: isVisible
+                                      ? (isSelected
+                                          ? widget.selectedColor
+                                              .withOpacity(0.15)
+                                          : Colors.white)
+                                      : Colors.grey.withOpacity(0.08),
+                                  border: Border.all(
+                                    color: isVisible
+                                        ? (isSelected
+                                            ? widget.selectedColor
+                                            : widget.unselectedColor)
+                                        : Colors.grey.withOpacity(0.4),
+                                    width: 1.2,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(widget.borderRadius),
                                 ),
                                 child: Stack(
-                                  alignment: Alignment.centerLeft,
+                                  clipBehavior: Clip.none,
                                   children: [
-                                    Text(
-                                      cat.title,
-                                      style: TextStyle(
-                                        color: isVisible 
-                                            ? (cat.isSelected ? widget.selectedColor : widget.unselectedColor)
-                                            : widget.unselectedColor,
+                                    // 标签文本
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: widget.deleteIconSize * 0.4,
+                                        horizontal: widget.deleteIconSize * 0.8,
+                                      ),
+                                      child: Text(
+                                        cat.title,
+                                        style: TextStyle(
+                                          color: isVisible
+                                              ? (isSelected
+                                                  ? widget.selectedColor
+                                                  : widget.unselectedColor)
+                                              : widget.unselectedColor
+                                                  .withOpacity(0.7),
+                                          fontWeight: isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
                                       ),
                                     ),
+                                    // 删除按钮（仅可见标签显示）
                                     if (isVisible)
                                       Positioned(
-                                        top: -4,
-                                        right: -4,
+                                        top: 0,
+                                        right: 0,
                                         child: GestureDetector(
-                                          onTap: (() {
-                                            viewModel.removeFromVisibleList(cat.title);
-                                            _overlayEntry?.markNeedsBuild(); // 刷新Overlay内容
-                                          }),
+                                          onTap: () {
+                                            viewModel
+                                                .removeFromVisibleList(cat.title);
+                                            _overlayEntry?.markNeedsBuild();
+                                          },
+                                          behavior: HitTestBehavior.translucent,
                                           child: Container(
-                                            width: widget.iconSize * 0.8,
-                                            height: widget.iconSize * 0.8,
+                                            width: widget.deleteIconSize,
+                                            height: widget.deleteIconSize,
                                             decoration: BoxDecoration(
                                               color: widget.deleteIconColor,
                                               shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 2,
+                                                ),
+                                              ],
                                             ),
+                                            alignment: Alignment.center,
                                             child: Icon(
                                               Icons.close,
-                                              size: widget.iconSize * 0.5,
+                                              size: widget.deleteIconSize * 0.7,
                                               color: Colors.white,
                                             ),
                                           ),
@@ -162,7 +246,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                                 ),
                               ),
                             );
-                          }),
+                          }).toList(),
                         ],
                       ),
                     ),
@@ -174,7 +258,7 @@ class _CategorySelectorState extends State<CategorySelector> {
         );
       },
     );
-    
+
     Overlay.of(context).insert(_overlayEntry!);
   }
 
@@ -197,7 +281,12 @@ class _CategorySelectorState extends State<CategorySelector> {
         } else if (!viewModel.isExpanded && _overlayEntry != null) {
           _removeOverlay();
         }
-        
+
+        // 确保_tagKeys为所有可见类别创建了GlobalKey
+        for (var cat in viewModel.visibleCategories) {
+          _tagKeys.putIfAbsent(cat.title, () => GlobalKey());
+        }
+
         return Container(
           key: _headerKey,
           width: double.infinity, // 确保容器宽度为父容器的宽度
@@ -216,14 +305,36 @@ class _CategorySelectorState extends State<CategorySelector> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         physics: AlwaysScrollableScrollPhysics(),
-                        child: Row(
+                        child: Stack(
                           children: [
-                            // 可见的类别标签
-                            ...viewModel.visibleCategories.map((cat) => _buildCategoryTag(
-                              context,
-                              cat,
-                              viewModel,
-                            )).toList(),
+                            Row(
+                              children: [
+                                // 可见的类别标签
+                                ...viewModel.visibleCategories.map((cat) =>
+                                    _buildCategoryTag(
+                                      context,
+                                      cat,
+                                      viewModel,
+                                    )),
+                              ],
+                            ),
+                            // 指示器滑块
+                            AnimatedPositioned(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              left: _indicatorLeft,
+                              bottom: 0, // 放置在标签下方
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                height: 3, // 指示器高度
+                                width: _indicatorWidth,
+                                decoration: BoxDecoration(
+                                  color: widget.selectedColor,
+                                  borderRadius: BorderRadius.circular(1.5),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -240,11 +351,14 @@ class _CategorySelectorState extends State<CategorySelector> {
                           padding: EdgeInsets.all(widget.spacing),
                           decoration: BoxDecoration(
                             color: Colors.grey.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(widget.borderRadius),
+                            borderRadius:
+                                BorderRadius.circular(widget.borderRadius),
                           ),
                           child: Icon(
-                            viewModel.isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                            size: widget.iconSize,
+                            viewModel.isExpanded
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            size: widget.expandIconSize,
                             color: Colors.grey,
                           ),
                         ),
@@ -252,10 +366,9 @@ class _CategorySelectorState extends State<CategorySelector> {
                   ],
                 ),
               ),
-              
+
               // 不占用布局空间的占位符
-              if (viewModel.isExpanded)
-                Container(height: 0),
+              if (viewModel.isExpanded) Container(height: 0),
             ],
           ),
         );
@@ -264,30 +377,55 @@ class _CategorySelectorState extends State<CategorySelector> {
   }
 
   // 构建类别标签
-  Widget _buildCategoryTag(BuildContext context, CategoryEntity category, CategoryViewModel viewModel) {
+  Widget _buildCategoryTag(
+      BuildContext context, CategoryEntity category, CategoryViewModel viewModel) {
+    // 获取对应的GlobalKey，如果不存在则创建一个
+    _tagKeys.putIfAbsent(category.title, () => GlobalKey());
+
     return GestureDetector(
-      onTap: () => viewModel.selectCategory(category),
+      key: _tagKeys[category.title], // 为每个标签设置key
+      onTap: () {
+        viewModel.selectCategory(category);
+        // 在下一帧更新指示器位置
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _updateIndicatorPosition(viewModel);
+        });
+      },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: widget.spacing),
         padding: EdgeInsets.symmetric(
           horizontal: widget.spacing * 2,
           vertical: widget.spacing,
         ),
-        decoration: BoxDecoration(
-          color: category.isSelected 
-              ? widget.selectedColor.withOpacity(0.2)
-              : Colors.grey.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-        ),
+        // 移除背景色选中状态
+        // decoration: BoxDecoration(
+        //   color: category.isSelected
+        //       ? widget.selectedColor.withOpacity(0.2)
+        //       : Colors.grey.withOpacity(0.1),
+        //   borderRadius: BorderRadius.circular(widget.borderRadius),
+        // ),
         child: Text(
           category.title,
           style: TextStyle(
-            color: category.isSelected 
+            color: category.isSelected
                 ? widget.selectedColor
                 : widget.unselectedColor,
+            fontWeight: category.isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),
     );
+  }
+}
+
+// 在CategoryViewModel中添加一个辅助方法，用于查找选中的类别
+extension CategoryListExtension on List<CategoryEntity> {
+  CategoryEntity? firstWhereOrNull(bool Function(CategoryEntity) test) {
+    for (var element in this) {
+      if (test(element)) {
+        return element;
+      }
+    }
+    return null;
   }
 }
