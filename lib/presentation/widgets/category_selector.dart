@@ -53,6 +53,8 @@ class _CategorySelectorState extends State<CategorySelector> {
 
   // 用于获取每个标签的Key，以便计算指示器位置
   final Map<String, GlobalKey> _tagKeys = {};
+  // 新增：用于获取每个标签文本的Key
+  final Map<String, GlobalKey> _tagTextKeys = {};
   double _indicatorLeft = 0;
   double _indicatorWidth = 0;
 
@@ -93,23 +95,35 @@ class _CategorySelectorState extends State<CategorySelector> {
 
     if (selectedCategory != null &&
         _tagKeys[selectedCategory.title]?.currentContext != null) {
-      final RenderBox renderBox = _tagKeys[selectedCategory.title]!
-          .currentContext!
-          .findRenderObject() as RenderBox;
-      final size = renderBox.size;
-      final position = renderBox.localToGlobal(Offset.zero);
+      final tagContext = _tagKeys[selectedCategory.title]!.currentContext!;
+      final RenderBox tagRenderBox = tagContext.findRenderObject() as RenderBox;
+      final tagPosition = tagRenderBox.localToGlobal(Offset.zero);
 
       // 获取SingleChildScrollView的全局位置
       final RenderBox? scrollBox = context.findRenderObject() as RenderBox?;
       if (scrollBox == null) return;
       final scrollPosition = scrollBox.localToGlobal(Offset.zero);
 
+      // 通过Text的GlobalKey获取文本宽度
+      double textWidth = 0;
+      final textKey = _tagTextKeys[selectedCategory.title];
+      if (textKey != null && textKey.currentContext != null) {
+        final RenderBox? textRenderBox = textKey.currentContext!.findRenderObject() as RenderBox?;
+        if (textRenderBox != null) {
+          textWidth = textRenderBox.size.width * 1.2; // 增加一些额外的宽度
+        }
+      }
+      // 如果找不到文本宽度，则退回整个标签宽度
+      if (textWidth == 0) {
+        textWidth = tagRenderBox.size.width;
+      }
+
       setState(() {
-        _indicatorLeft = position.dx - scrollPosition.dx;
-        _indicatorWidth = size.width;
+        _indicatorLeft = tagPosition.dx - scrollPosition.dx +
+            (tagRenderBox.size.width - textWidth) / 2;
+        _indicatorWidth = textWidth;
       });
     } else {
-      // 如果没有选中的类别或者找不到对应的key，则隐藏指示器
       setState(() {
         _indicatorLeft = 0;
         _indicatorWidth = 0;
@@ -347,10 +361,8 @@ class _CategorySelectorState extends State<CategorySelector> {
                           _getHeaderPosition();
                         },
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: widget.spacing),
                           padding: EdgeInsets.all(widget.spacing),
                           decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.2),
                             borderRadius:
                                 BorderRadius.circular(widget.borderRadius),
                           ),
@@ -381,6 +393,8 @@ class _CategorySelectorState extends State<CategorySelector> {
       BuildContext context, CategoryEntity category, CategoryViewModel viewModel) {
     // 获取对应的GlobalKey，如果不存在则创建一个
     _tagKeys.putIfAbsent(category.title, () => GlobalKey());
+    // 新增：为文本分配GlobalKey
+    _tagTextKeys.putIfAbsent(category.title, () => GlobalKey());
 
     return GestureDetector(
       key: _tagKeys[category.title], // 为每个标签设置key
@@ -397,15 +411,9 @@ class _CategorySelectorState extends State<CategorySelector> {
           horizontal: widget.spacing * 2,
           vertical: widget.spacing,
         ),
-        // 移除背景色选中状态
-        // decoration: BoxDecoration(
-        //   color: category.isSelected
-        //       ? widget.selectedColor.withOpacity(0.2)
-        //       : Colors.grey.withOpacity(0.1),
-        //   borderRadius: BorderRadius.circular(widget.borderRadius),
-        // ),
         child: Text(
           category.title,
+          key: _tagTextKeys[category.title], // 新增：为Text设置key
           style: TextStyle(
             color: category.isSelected
                 ? widget.selectedColor

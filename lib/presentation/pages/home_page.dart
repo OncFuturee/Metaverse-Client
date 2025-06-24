@@ -41,7 +41,9 @@ class HomePage extends StatelessWidget {
                         isDense: true,
                       ),
                       readOnly: true,
-                      onTap: () {}, // 可扩展
+                      onTap: () {
+                        debugPrint('搜索框被点击');
+                      }, // 可扩展
                     ),
                   ),
                 ),
