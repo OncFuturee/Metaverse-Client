@@ -17,6 +17,7 @@ lib/
 │   └── repositories/     # 仓库接口
 ├── presentation/         # 表现层：UI、状态管理
 │   ├── pages/            # 页面
+│   ├── screen/           # 屏幕 （屏幕>页面）
 │   ├── widgets/          # 组件
 │   └── viewmodels/       # 状态管理（如Provider、Bloc等）
 ├── services/             # 第三方服务封装（如推送、支付等）

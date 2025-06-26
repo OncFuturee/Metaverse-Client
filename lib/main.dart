@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart';
 import 'package:provider/provider.dart';
+
 import 'injection.dart';
-import 'presentation/pages/main_page.dart';
+import 'package:metaverse_client/routes/app_router.dart';
+import 'package:metaverse_client/routes/auth_guard.dart';
+
 import 'presentation/viewmodels/home_viewmodel.dart';
+import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart';
+import 'package:metaverse_client/presentation/viewmodels/userinfo_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,22 +20,31 @@ void main() async {
           categoryUsecases: getIt(),
           storageKey: 'categories',
         )),
+        ChangeNotifierProvider(create: (_) => UserinfoViewmodel()),
       ],
-      child: const MetaverseApp(),
+      child: MetaverseApp(),
     ),
   );
 }
 
 class MetaverseApp extends StatelessWidget {
-  const MetaverseApp({super.key});
+  MetaverseApp({super.key});
+
+  final _appRouter = AppRouter(authGuard: AuthGuard(false)); // 初始设置为未认证
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'metaverse_client',
+    return MaterialApp.router(
+      title: 'Metaverse Client',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainPage(),
+      routerConfig: _appRouter.config(),
       debugShowCheckedModeBanner: false,
     );
+    // return MaterialApp(
+    //   title: 'metaverse_client',
+    //   theme: ThemeData(primarySwatch: Colors.blue),
+    //   home: const MainPage(),
+    //   debugShowCheckedModeBanner: false,
+    // );
   }
 }

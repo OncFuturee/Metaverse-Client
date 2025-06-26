@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'profile_drawer_page.dart';
+import 'package:auto_route/auto_route.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+import 'package:metaverse_client/presentation/pages/home_page.dart';
+import 'package:metaverse_client/presentation/pages/profile_drawer_page.dart';
+
+@RoutePage()
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainScreen> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [

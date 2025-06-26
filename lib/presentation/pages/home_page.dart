@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:metaverse_client/presentation/widgets/category_selector.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class HomePage extends StatelessWidget {
                       ),
                       readOnly: true,
                       onTap: () {
-                        debugPrint('搜索框被点击');
+                        context.router.pushNamed('/search'); // 使用 auto_route 跳转到搜索页面
                       }, // 可扩展
                     ),
                   ),
