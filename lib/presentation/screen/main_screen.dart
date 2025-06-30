@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 
 import 'package:metaverse_client/presentation/pages/home_page.dart';
 import 'package:metaverse_client/presentation/pages/profile_drawer_page.dart';
+import 'package:metaverse_client/presentation/pages/profile_page.dart';
 
 @RoutePage()
 class MainScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _MainPageState extends State<MainScreen> {
     const Center(child: Text('动态页占位')),
     const Center(child: Text('投稿页占位')),
     const Center(child: Text('消息页占位')),
-    const Center(child: Text('我的页占位')),
+    const ProfilePage(), // 个人中心页
   ];
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

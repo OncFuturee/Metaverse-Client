@@ -30,7 +30,7 @@ void main() async {
 class MetaverseApp extends StatelessWidget {
   MetaverseApp({super.key});
 
-  final _appRouter = AppRouter(authGuard: AuthGuard(false)); // 初始设置为未认证
+  final _appRouter = AppRouter(authGuard: AuthGuard(false));
 
   @override
   Widget build(BuildContext context) {

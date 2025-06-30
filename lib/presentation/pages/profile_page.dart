@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:metaverse_client/routes/app_router.dart';
 
-@RoutePage()
+/// 用户个人资料页面
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -32,7 +32,7 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.history,
               title: '观看历史',
               onTap: () {
-                // 示例：跳转到观看历史页面，这里假设不需要登录
+                // 跳转到观看历史页面
                 AutoRouter.of(context).push(const HistoryRoute());
               },
             ),
@@ -41,7 +41,7 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.collections_bookmark,
               title: '我的收藏',
               onTap: () {
-                _checkLoginAndNavigate(context, userInfo, const FavoritesRoute());
+                AutoRouter.of(context).push(const FavoritesRoute());
               },
             ),
             _buildFeatureTile(
@@ -49,7 +49,7 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.download,
               title: '我的下载',
               onTap: () {
-                _checkLoginAndNavigate(context, userInfo, const DownloadsRoute());
+                AutoRouter.of(context).push(const DownloadsRoute());
               },
             ),
             const Divider(height: 1, thickness: 8, color: Colors.black12),
@@ -180,119 +180,4 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-
-  // 检查登录状态并跳转
-  void _checkLoginAndNavigate(
-      BuildContext context, UserinfoViewmodel userInfo, PageRouteInfo route) {
-    if (userInfo.isLoggedIn) {
-      AutoRouter.of(context).push(route);
-    } else {
-      AutoRouter.of(context).push(const LoginRoute());
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请先登录')),
-      );
-    }
-  }
 }
-
-// --- 假设的路由页面，请根据你的实际项目创建 ---
-// 在你的 app_router.dart 文件中配置这些路由
-
-@RoutePage()
-class UserInfoPage extends StatelessWidget {
-  const UserInfoPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('个人信息')),
-      body: const Center(
-        child: Text('这里是个人信息页面', style: TextStyle(fontSize: 24)),
-      ),
-    );
-  }
-}
-
-@RoutePage()
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('观看历史')),
-      body: const Center(
-        child: Text('这里是观看历史页面', style: TextStyle(fontSize: 24)),
-      ),
-    );
-  }
-}
-
-@RoutePage()
-class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('我的收藏')),
-      body: const Center(
-        child: Text('这里是我的收藏页面', style: TextStyle(fontSize: 24)),
-      ),
-    );
-  }
-}
-
-@RoutePage()
-class DownloadsPage extends StatelessWidget {
-  const DownloadsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('我的下载')),
-      body: const Center(
-        child: Text('这里是我的下载页面', style: TextStyle(fontSize: 24)),
-      ),
-    );
-  }
-}
-
-@RoutePage()
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('设置')),
-      body: const Center(
-        child: Text('这里是设置页面', style: TextStyle(fontSize: 24)),
-      ),
-    );
-  }
-}
-
-@RoutePage()
-class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('关于我们')),
-      body: const Center(
-        child: Text('这里是关于我们页面', style: TextStyle(fontSize: 24)),
-      ),
-    );
-  }
-}
-
-// 需要在 pubspec.yaml 中添加 provider 依赖
-// dependencies:
-//   flutter:
-//     sdk: flutter
-//   auto_route: ^7.0.0 # 替换为你的auto_router版本
-//   auto_route_generator: ^7.0.0 # 替换为你的auto_router版本
-//   build_runner: ^2.0.0 # 替换为你的build_runner版本
-//   provider: ^6.0.0 # 替换为你的provider版本
