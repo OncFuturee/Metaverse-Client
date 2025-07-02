@@ -31,6 +31,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: DownloadsRoute.page, path: '/downloads', guards: [authGuard]),
         AutoRoute(page: SettingsRoute.page, path: '/settings', guards: [authGuard]),
         AutoRoute(page: UserInfoRoute.page, path: '/user-info/:id', guards: [authGuard]), // 带有参数的路由
-        AutoRoute(page: AboutRoute.page, path: '/about', guards: [authGuard]),
+        AutoRoute(page: AboutRoute.page, path: '/about'),
       ];
 }

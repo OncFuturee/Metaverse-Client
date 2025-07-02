@@ -10,7 +10,7 @@ import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart
 import 'package:metaverse_client/presentation/viewmodels/userinfo_viewmodel.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // 确保Flutter引擎已初始化
   await configureDependencies();
   runApp(
     MultiProvider(
@@ -35,7 +35,7 @@ class MetaverseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Metaverse Client',
+      title: 'Metaverse 客户端',
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: _appRouter.config(),
       debugShowCheckedModeBanner: false,

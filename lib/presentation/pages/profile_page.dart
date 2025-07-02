@@ -14,17 +14,12 @@ class ProfilePage extends StatelessWidget {
     final userInfo = Provider.of<UserinfoViewmodel>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('我的'),
-        backgroundColor: Colors.blueGrey[800],
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             // --- 用户信息区域 ---
             _buildUserInfoSection(context, userInfo),
-            const Divider(height: 1, thickness: 8, color: Colors.black12), // 分隔线
+            const Divider(height: 8, thickness: 4, color: Colors.black12), // 分隔线
 
             // --- 功能入口列表 ---
             _buildFeatureTile(
@@ -52,7 +47,7 @@ class ProfilePage extends StatelessWidget {
                 AutoRouter.of(context).push(const DownloadsRoute());
               },
             ),
-            const Divider(height: 1, thickness: 8, color: Colors.black12),
+            const Divider(height: 8, thickness: 4, color: Colors.black12),
 
             _buildFeatureTile(
               context,
@@ -70,7 +65,7 @@ class ProfilePage extends StatelessWidget {
                 AutoRouter.of(context).push(const AboutRoute());
               },
             ),
-            const Divider(height: 1, thickness: 8, color: Colors.black12),
+            const Divider(height: 8, thickness: 4, color: Colors.black12),
 
             // --- 退出登录按钮 (仅当已登录时显示) ---
             if (userInfo.isLoggedIn)

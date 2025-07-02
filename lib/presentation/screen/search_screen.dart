@@ -67,6 +67,8 @@ class _SearchScreenState extends State<SearchScreen> {
             Expanded(
               child: TextField(
                 controller: _searchController,
+                maxLines: 1,
+                style: const TextStyle(fontSize: 12.0),
                 decoration: InputDecoration(
                   hintText: '搜索',
                   border: OutlineInputBorder(
@@ -75,8 +77,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   filled: true,
                   fillColor: Colors.grey[200],
+                  isCollapsed: true, // 是否折叠 true：包裹内容，false：占满空间
                   contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
                 ),
                 onSubmitted: _performSearch, // Search when enter is pressed
               ),

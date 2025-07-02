@@ -55,11 +55,31 @@ class _MainPageState extends State<MainScreen> {
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
-          BottomNavigationBarItem(icon: Icon(Icons.dynamic_feed), label: '动态'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_box), label: '投稿'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: '消息'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: '我的'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined), 
+            label: '首页',
+            activeIcon: Icon(Icons.home_rounded),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.web_stories_outlined), 
+            label: '动态',
+            activeIcon: Icon(Icons.web_stories_rounded),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_box_outlined), 
+            label: '投稿',
+            activeIcon: Icon(Icons.add_box_rounded),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.forum_outlined), 
+            label: '消息',
+            activeIcon: Icon(Icons.forum_rounded),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline), 
+            label: '我的',
+            activeIcon: Icon(Icons.person_rounded),
+          ),
         ],
         onTap: (i) => setState(() => _currentIndex = i),
       ),
