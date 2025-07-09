@@ -44,23 +44,11 @@ class CategoryViewModel extends ChangeNotifier {
     result.fold(
       (failure) {
         print('Failed to load categories: $failure');
-        // 使用默认分类
-        _categories = [
-          CategoryEntity(title: "科技", isSelected: true, isVisible: true, link: "/tech"),
-          CategoryEntity(title: "体育", isSelected: false, isVisible: true, link: "/sports"),
-          CategoryEntity(title: "娱乐", isSelected: false, isVisible: true, link: "/entertainment"),
-          CategoryEntity(title: "财经", isSelected: false, isVisible: false, link: "/finance"),
-          CategoryEntity(title: "健康", isSelected: false, isVisible: false, link: "/health"),
-          CategoryEntity(title: "教育", isSelected: false, isVisible: false, link: "/education"),
-          CategoryEntity(title: "我练功发自真心", isSelected: false, isVisible: false, link: "/education"),
-          CategoryEntity(title: "哇哈哈", isSelected: false, isVisible: false, link: "/education"),
-        ];
-        _visibleCategories = _categories.where((cat) => cat.isVisible).map((cat) => cat.title).toList();
-        _saveCategories();
       },
       (categories) {
         _categories = categories;
         _visibleCategories = _categories.where((cat) => cat.isVisible).map((cat) => cat.title).toList();
+        print('获取的分类： $_visibleCategories');
       },
     );
     notifyListeners();

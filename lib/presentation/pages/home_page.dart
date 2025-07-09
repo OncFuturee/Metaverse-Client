@@ -78,19 +78,19 @@ class HomePage extends StatelessWidget {
                     onRefresh: () => vm.fetchVideos(),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        const double padding = 10; // 布局的内边距
+                        const double padding = 4; // 布局的内边距
                         // 计算每个卡片的最大宽度，手机两列，宽屏自适应多列
                         double maxCardWidth = 220; // 卡片最大宽度
                         int crossAxisCount = (constraints.maxWidth / maxCardWidth).floor().clamp(2, 6);
-                        double crossAxisSpacing = 6; // 列间距
-                        double mainAxisSpacing = 6; // 行间距
-                        double coverAspectRatio = 16 / 9; // 封面宽高比
+                        double crossAxisSpacing = 4; // 列间距
+                        double mainAxisSpacing = 4; // 行间距
+                        double coverAspectRatio = 16 / 12; // 封面宽高比
                         double cardWidth = (constraints.maxWidth - padding * 2 - crossAxisSpacing * (crossAxisCount - 1)) / crossAxisCount;
                         double coverHeight = cardWidth / coverAspectRatio; // 封面高度
-                        double listTileHeight = 60; // 列表项高度
+                        double listTileHeight = 64; // 列表项高度
                         double cardAspectRatio = cardWidth / (coverHeight + listTileHeight); // 卡片宽高比
                         return GridView.builder(
-                          padding: const EdgeInsets.all(padding),
+                          padding: const EdgeInsets.symmetric(vertical: padding, horizontal: padding),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
                             crossAxisSpacing: crossAxisSpacing,

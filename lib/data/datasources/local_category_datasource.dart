@@ -18,8 +18,18 @@ class LocalCategoryDatasource {
   // 从本地存储获取分类
   List<CategoryItem> getCategories(String key) {
     final jsonString = sharedPreferences.getString(key);
-    if (jsonString == null) return [];
-    
+    if (jsonString == null) {
+      return [
+          CategoryItem(title: "科技", isSelected: true, isVisible: true, link: "/tech"),
+          CategoryItem(title: "体育", isSelected: false, isVisible: true, link: "/sports"),
+          CategoryItem(title: "娱乐", isSelected: false, isVisible: true, link: "/entertainment"),
+          CategoryItem(title: "财经", isSelected: false, isVisible: false, link: "/finance"),
+          CategoryItem(title: "健康", isSelected: false, isVisible: false, link: "/health"),
+          CategoryItem(title: "教育", isSelected: false, isVisible: false, link: "/education"),
+          CategoryItem(title: "我练功发自真心", isSelected: false, isVisible: false, link: "/education"),
+          CategoryItem(title: "哇哈哈", isSelected: false, isVisible: false, link: "/education"),
+        ];
+    }
     try {
       final jsonList = json.decode(jsonString) as List<dynamic>;
       return jsonList.map((json) => CategoryItem.fromMap(json)).toList();
