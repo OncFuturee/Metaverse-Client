@@ -1,187 +1,78 @@
-# Metaverse-Client
-元宇宙视频客户端是一个基于 Flutter 框架开发的跨平台应用，旨在打造一个身临其境的赛博世界，使用户能够在虚拟空间中探索、互动和分享。该应用融合了最新的视频技术、社交互动和 3D 虚拟体验，为用户提供一个全新的数字化社交和娱乐平台。
-# 项目架构
-本项目基于`模块化设计`和`插件式开发`,拥有`横向扩展能力`。
-## 关键设计原则
-- 开闭原则：对扩展开放，对修改关闭
-- 单一职责：每个模块 / 类只负责单一功能
-- 依赖倒置：依赖抽象而非具体实现
-- 接口隔离：细粒度接口减少依赖
-- 插件式架构：通过注册机制动态添加功能
-## 完整项目结构
-```plaintext
+# 🏗️ 项目结构概览
+```text
 lib/
-├── app/                   # 应用全局配置（不变）
-│   ├── app.dart           # 应用入口
-│   ├── app_config.dart    # 应用配置
-│   └── app_theme.dart     # 主题配置
-│
-├── core/                  # 核心框架（不变）
-│   ├── di/                # 依赖注入（服务注册）
-│   │   ├── injection_container.dart  # 全局服务注册
-│   │   └── service_locator.dart      # 服务定位器
-│   │
-│   ├── errors/            # 错误处理
-│   │   ├── failure.dart    # 统一错误类型
-│   │   └── error_handler.dart  # 错误处理器
-│   │
-│   ├── exceptions/        # 异常类型
-│   ├── utils/             # 工具类
-│   │   ├── logger.dart    # 日志工具
-│   │   └── network_info.dart  # 网络状态工具
-│   │
-│   ├── constants/         # 常量定义
-│   ├── registry/          # 模块注册表
-│   │   ├── feature_registry.dart  # 功能模块注册
-│   │   └── factory_registry.dart  # 工厂模式注册
-│   │
-│   └── event_bus/         # 事件总线（模块间通信）
-│       └── app_event_bus.dart  # 全局事件总线
-│
-├── domain/                # 领域层（不变）
-│   ├── entities/          # 通用实体
-│   │   ├── user.dart      # 用户实体
-│   │   ├── video.dart     # 视频实体
-│   │   └── comment.dart   # 评论实体
-│   │
-│   ├── value_objects/     # 值对象
-│   │   ├── unique_id.dart  # 唯一ID
-│   │   └── email_address.dart  # 邮箱地址
-│   │
-│   └── shared/            # 共享业务逻辑
-│       └── use_case.dart  # 用例基类
-│
-├── platform/              # 平台适配（不变）
-│   ├── base/              # 平台接口定义
-│   │   ├── file_service.dart     # 文件操作接口
-│   │   ├── cache_service.dart    # 缓存服务接口
-│   │   └── device_info.dart      # 设备信息接口
-│   │
-│   ├── android/           # Android 实现
-│   │   ├── file_service_android.dart  # 文件操作实现
-│   │   └── ...
-│   │
-│   ├── ios/               # iOS 实现
-│   │   ├── file_service_ios.dart  # 文件操作实现
-│   │   └── ...
-│   │
-│   ├── web/               # Web 实现
-│   │   ├── file_service_web.dart  # 文件操作实现
-│   │   └── ...
-│   │
-│   ├── linux/             # linux 实现
-│   └── windows/           # windows 实现
-│
-├── features/              # 功能模块（横向扩展点）
-│   ├── auth/              # 认证模块
-│   │   ├── domain/        # 认证领域逻辑
-│   │   ├── data/          # 认证数据层
-│   │   ├── presentation/  # 认证UI
-│   │   └── auth_module.dart  # 模块注册
-│   │
-│   ├── video_player/      # 视频播放模块
-│   │   ├── domain/        # 视频领域逻辑
-│   │   │   ├── entities/          # 视频相关实体
-│   │   │   ├── repositories/      # 仓库接口
-│   │   │   ├── use_cases/         # 用例（业务逻辑）
-│   │   │   └── video_failure.dart  # 视频模块错误类型
-│   │   │
-│   │   ├── data/          # 视频数据层
-│   │   │   ├── datasources/       # 数据源
-│   │   │   │   ├── local/         # 本地数据源
-│   │   │   │   └── remote/        # 远程数据源
-│   │   │   ├── models/            # 数据模型
-│   │   │   ├── repositories/      # 仓库实现
-│   │   │   └── video_mapper.dart  # 实体与模型映射
-│   │   │
-│   │   ├── presentation/  # 视频UI 表现层
-│   │   │   ├── screens/           # 页面
-│   │   │   ├── widgets/           # 组件
-│   │   │   ├── providers/         # 状态管理（Provider）
-│   │   │   └── routes/            # 路由
-│   │   │
-│   │   └── video_module.dart  # 模块注册
-│   │
-│   ├── social/            # 社交模块
-│   │   ├── domain/        # 社交领域逻辑
-│   │   ├── data/          # 社交数据层
-│   │   ├── presentation/  # 社交UI
-│   │   └── social_module.dart  # 模块注册
-│   │
-│   └── ...                # 未来可扩展模块（如直播、AR滤镜等）
-│
-└── main.dart              # 程序入口点
+├── core/                 # 核心模块：配置、常量、日志、网络等
+│   ├── config/           # 应用配置
+│   ├── constants/        # 常量定义
+│   ├── services/         # 系统服务
+│   ├── utils/            # 工具类
+│   └── network/          # 网络请求封装
+├── data/                 # 数据层：模型、数据源、仓库
+│   ├── models/           # 数据模型
+│   ├── datasources/      # 数据源（API、本地存储等）
+│   └── repositories/     # 仓库接口及实现
+├── domain/               # 领域层：实体、用例、接口
+│   ├── entities/         # 业务实体
+│   ├── usecases/         # 用例
+│   └── repositories/     # 仓库接口
+├── presentation/         # 表现层：UI、状态管理
+│   ├── pages/            # 页面
+│   ├── screen/           # 屏幕 （屏幕>页面）
+│   ├── widgets/          # 组件
+│   └── viewmodels/       # 状态管理（如Provider、Bloc等）
+├── services/             # 第三方服务封装（如推送、支付等）
+├── routes/               # 路由管理
+├── main.dart             # 应用入口
+└── injection.dart        # 依赖注入配置
 ```
-#### 模块注册示例
-```dart
-// features/video_player/video_module.dart
-class VideoPlayerModule implements FeatureModule {
-  @override
-  String get name => 'video_player';
-  
-  @override
-  void init() {
-    // 注册依赖
-    sl.registerLazySingleton<VideoRepository>(
-      () => VideoRepositoryImpl(
-        remoteDataSource: sl(),
-        localDataSource: sl(),
-        networkInfo: sl(),
-      ),
-    );
-    
-    // 注册用例
-    sl.registerLazySingleton(() => GetVideoDetails(sl()));
-    sl.registerLazySingleton(() => ToggleVideoLike(sl()));
-    
-    // 注册平台实现
-    if (kIsWeb) {
-      sl.registerLazySingleton<VideoPlayerService>(() => WebVideoPlayerServiceImpl());
-    } else {
-      sl.registerLazySingleton<VideoPlayerService>(() => MobileVideoPlayerServiceImpl());
-    }
-  }
-  
-  @override
-  List<Route> get routes => [
-    MaterialPageRoute(builder: (_) => VideoPlayerScreen()),
-    MaterialPageRoute(builder: (_) => VideoDetailScreen()),
-  ];
-}
-```
-#### 主程序初始化
-```dart
-// main.dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initCore(); // 初始化核心服务
-  
-  // 注册功能模块
-  FeatureRegistry.registerModule(AuthModule());
-  FeatureRegistry.registerModule(VideoPlayerModule());
-  FeatureRegistry.registerModule(SocialModule());
-  
-  // 未来扩展只需添加新模块
-  // FeatureRegistry.registerModule(LiveStreamingModule());
-  // FeatureRegistry.registerModule(ARFilterModule());
-  
-  runApp(const MyApp());
-}
-```
-#### 横向扩展示例
-添加新功能（如直播）时，只需创建新模块：
-```plaintext
-features/live_streaming/
-├── domain/
-├── data/
-├── presentation/
-└── live_streaming_module.dart  # 新模块注册
-```
-#### 关键设计亮点
-- 核心框架稳定：core/、domain/、platform/ 目录结构固定，不随业务扩展变化
-- 功能模块隔离：每个模块拥有独立的 MVC 结构，通过接口与外部通信
-- 注册表机制：通过 FeatureRegistry 动态注册模块，避免硬编码
-- 依赖倒置：模块间依赖抽象接口，而非具体实现
-- 事件驱动：通过 EventBus 实现松耦合的模块间通信
+# 🧩 架构设计原则
+* 分层架构：采用 Clean Architecture，将应用分为数据层、领域层和表现层，确保各层职责清晰，便于维护和扩展。
+* 依赖注入：使用依赖注入（如 get_it、injectable）管理依赖关系，提升模块的可测试性和可替换性。
+* 状态管理：根据项目复杂度选择合适的状态管理方案，如 Provider。
+* 响应式编程：利用 Dart 的 Stream 和 Future 实现响应式编程，提升应用的响应能力。
+* 模块化开发：将功能模块划分为独立的包或模块，提升代码复用性和团队协作效率。
+# 🎯 功能模块建议
+1. 用户管理模块
+* 注册/登录：支持手机号、邮箱、第三方登录（如微信、Facebook 等）。
+* 用户资料：查看和编辑个人资料，设置头像、昵称、签名等。
+* 账户设置：隐私设置、通知设置、安全设置等。
 
-这种架构设计使项目可以像**插件系统**一样轻松添加新功能，同时保持现有代码的稳定性和可维护性。
+2. 视频播放模块
+* 视频列表：展示推荐、热门、关注等分类的视频列表。
+* 视频详情：播放视频，显示点赞、评论、分享等信息。
+* 播放器控制：播放、暂停、全屏、进度控制等功能。
+* 弹幕功能：实时显示用户发送的弹幕信息。
+
+3. 社交互动模块
+* 评论系统：用户可以对视频进行评论，支持回复、点赞等。
+* 点赞/收藏：用户可以点赞或收藏视频，便于后续查看。
+* 关注系统：用户可以关注其他用户，查看其发布的视频。
+
+4. 消息通知模块
+* 系统通知：如活动通知、更新提示等。
+* 互动通知：如评论回复、点赞提醒等。
+* 私信功能：用户之间可以发送私信，进行一对一交流。
+
+5. 搜索与推荐模块
+* 搜索功能：支持关键词搜索视频、用户等。
+* 推荐算法：根据用户行为和兴趣，推荐相关视频内容。
+
+6. 设置与帮助模块
+* 应用设置：语言切换、主题设置、缓存清理等。
+* 帮助中心：常见问题解答、反馈建议等。
+
+# 🛠️ 技术选型建议
+* 网络请求：使用 Dio 进行网络请求，支持拦截器、日志打印等功能。
+* 本地存储：使用 Hive 或 SharedPreferences 存储用户信息、设置等。
+* 数据库：如果需要复杂的数据存储，可以使用 Isar 或 Floor。
+* 状态管理：根据项目需求选择合适的状态管理方案，如 Provider。
+* 依赖注入：使用 get_it 或 injectable 实现依赖注入，提升模块的可测试性。
+* 路由管理：使用 GoRouter 管理应用路由，支持嵌套路由、命名路由等。
+* 视频播放：使用 video_player 或集成第三方视频 SDK（如阿里云播放器）实现视频播放功能。
+* 推送通知：集成 Firebase Cloud Messaging 或其他推送服务，实现消息推送功能。
+* 国际化：使用 flutter_localizations 实现多语言支持，提升应用的国际化能力。
+
+# 📈 可扩展性与未来规划
+* 插件化架构：将功能模块设计为插件，便于后续的功能扩展和维护。
+* 微服务架构：后端采用微服务架构，提升系统的可扩展性和容错性。
+* 多平台支持：利用 Flutter 的跨平台特性，支持 Web、桌面等平台，拓展应用的使用场景。
