@@ -1,29 +1,37 @@
+# 开发中...
+项目还在开发阶段...
+
 # 🏗️ 项目结构概览
 ```text
 lib/
-├── core/                 # 核心模块：配置、常量、日志、网络等
-│   ├── config/           # 应用配置
-│   ├── constants/        # 常量定义
-│   ├── services/         # 系统服务
-│   ├── utils/            # 工具类
-│   └── network/          # 网络请求封装
-├── data/                 # 数据层：模型、数据源、仓库
-│   ├── models/           # 数据模型
-│   ├── datasources/      # 数据源（API、本地存储等）
-│   └── repositories/     # 仓库接口及实现
-├── domain/               # 领域层：实体、用例、接口
-│   ├── entities/         # 业务实体
-│   ├── usecases/         # 用例
-│   └── repositories/     # 仓库接口
-├── presentation/         # 表现层：UI、状态管理
-│   ├── pages/            # 页面
-│   ├── screen/           # 屏幕 （屏幕>页面）
-│   ├── widgets/          # 组件
-│   └── viewmodels/       # 状态管理（如Provider、Bloc等）
-├── services/             # 第三方服务封装（如推送、支付等）
-├── routes/               # 路由管理
-├── main.dart             # 应用入口
-└── injection.dart        # 依赖注入配置
+├── core/                          # 核心模块：配置、常量、日志、网络等
+│   ├── config/                    # 应用配置
+│   ├── constants/                 # 常量定义
+│   ├── services/                  # 系统服务
+│   ├── utils/                     # 工具类
+│   └── network/                   # 网络请求封装
+├── data/                          # 数据层：模型、数据源、仓库
+│   ├── models/                    # 数据模型
+│   ├── datasources/               # 数据源（API、本地存储等）
+│   └── repositories/              # 仓库接口及实现
+├── domain/                        # 领域层（可选）：实体、用例、接口(整合多个功能间相同的部分)
+│   ├── entities/                  # 业务实体
+│   ├── usecases/                  # 用例
+│   └── repositories/              # 仓库接口
+├── presentation/                  # 表现层（按功能分）：视图层、视图模型层
+│   ├── home/                      # 首页
+│   │   ├── view/                  # 首页视图
+│   │   │   ├── home_screen.dart   # 首页视图主体
+│   │   │   └── widgets/           # 首页视图组件
+│   │   └── view_model/            # 首页视图模型
+│   ├── auth/                      # 认证功能
+│   │   ├── login/                 # 登录
+│   │   └── logout/                # 登出
+│   └── .../                       # 其它功能
+├── services/                      # 第三方服务封装（如推送、支付等）
+├── routes/                        # 路由管理
+├── main.dart                      # 应用入口
+└── injection.dart                 # 依赖注入配置
 ```
 # 🧩 架构设计原则
 * 分层架构：采用 Clean Architecture，将应用分为数据层、领域层和表现层，确保各层职责清晰，便于维护和扩展。

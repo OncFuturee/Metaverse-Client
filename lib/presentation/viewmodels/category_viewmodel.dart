@@ -43,12 +43,12 @@ class CategoryViewModel extends ChangeNotifier {
     final result = await categoryUsecases.getCategories();
     result.fold(
       (failure) {
-        print('Failed to load categories: $failure');
+        debugPrint('Failed to load categories: $failure');
       },
       (categories) {
         _categories = categories;
         _visibleCategories = _categories.where((cat) => cat.isVisible).map((cat) => cat.title).toList();
-        print('获取的分类： $_visibleCategories');
+        debugPrint('获取的分类： $_visibleCategories');
       },
     );
     notifyListeners();

@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
         children: [
           // 顶部栏
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
             child: Row(
               children: [
                 GestureDetector(
@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
                     backgroundImage: NetworkImage(
                       vm.videos.isNotEmpty ? vm.videos[0].authorAvatar : 'https://i.pravatar.cc/150?img=1',
                     ),
-                    radius: 22,
+                    radius: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
               borderRadius: 6.0,
               deleteIconSize: 12.0,
               expandIconSize: 24.0,
-              spacing: 8.0,
+              spacing: 4,
             ),
           ),
           // 视频区
