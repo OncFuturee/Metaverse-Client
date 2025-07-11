@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class ProfileDrawerPage extends StatelessWidget {
@@ -18,8 +20,8 @@ class ProfileDrawerPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 48, left: 24, right: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    CircleAvatar(radius: 36, backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=1')),
+                  children: [
+                    CircleAvatar(radius: 36, backgroundImage: NetworkImage('https://picsum.photos/seed/${Random().nextInt(1000)}/200/200')),
                     SizedBox(height: 16),
                     Text('昵称：示例用户', style: TextStyle(fontSize: 18)),
                     SizedBox(height: 8),

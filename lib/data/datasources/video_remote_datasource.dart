@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../models/video_model.dart';
 
 class VideoRemoteDataSource {
@@ -6,10 +8,10 @@ class VideoRemoteDataSource {
     return List.generate(10, (i) => VideoModel(
       id: '$category-$i',
       title: '$category 视频标题 $i',
-      coverUrl: 'https://picsum.photos/seed/$category$i/300/225',
-      videoUrl: 'https://www.example.com/video$i.mp4',
+      coverUrl: 'https://picsum.photos/seed/${Random().nextInt(1000)}/300/225',
+      videoUrl: 'https://www.example.com/video${Random().nextInt(1000)}.mp4',
       category: category,
-      authorAvatar: 'https://picsum.photos/seed/$category$i/200/200',
+      authorAvatar: 'https://picsum.photos/seed/${Random().nextInt(1000)}/200/200',
       authorName: '作者 $i',
     ));
   }

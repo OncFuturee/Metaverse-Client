@@ -42,7 +42,7 @@ abstract class _$AppRouter extends RootStackRouter {
     LoginRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const LoginPage(),
+        child: const LoginScreen(),
       );
     },
     MainRoute.name: (routeData) {
@@ -129,7 +129,7 @@ class HistoryRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [LoginPage]
+/// [LoginScreen]
 class LoginRoute extends PageRouteInfo<void> {
   const LoginRoute({List<PageRouteInfo>? children})
       : super(

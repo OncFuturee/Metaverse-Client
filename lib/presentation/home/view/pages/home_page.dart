@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:metaverse_client/presentation/home/view/widgets/category_selector.dart';
@@ -24,7 +26,8 @@ class HomePage extends StatelessWidget {
                   onTap: onAvatarTap,
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(
-                      vm.videos.isNotEmpty ? vm.videos[0].authorAvatar : 'https://i.pravatar.cc/150?img=1',
+                      // 随机头像图片
+                      'https://picsum.photos/seed/${Random().nextInt(1000)}/200/200',
                     ),
                     radius: 20,
                   ),
