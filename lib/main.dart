@@ -5,9 +5,9 @@ import 'injection.dart';
 import 'package:metaverse_client/routes/app_router.dart';
 import 'package:metaverse_client/routes/auth_guard.dart';
 
-import 'presentation/viewmodels/home_viewmodel.dart';
-import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart';
-import 'package:metaverse_client/presentation/viewmodels/userinfo_viewmodel.dart';
+import 'presentation/home/view_models/home_viewmodel.dart';
+import 'package:metaverse_client/presentation/home/view_models/category_viewmodel.dart';
+import 'package:metaverse_client/presentation/home/view_models/userinfo_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保Flutter引擎已初始化

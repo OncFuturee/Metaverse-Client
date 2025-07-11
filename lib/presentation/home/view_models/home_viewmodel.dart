@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/video.dart';
-import '../../domain/usecases/get_videos.dart';
-import '../../injection.dart';
+import '../../../domain/entities/video.dart';
+import '../../../domain/usecases/get_videos.dart';
+import '../../../injection.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final GetVideos _getVideos = GetVideos(getIt());

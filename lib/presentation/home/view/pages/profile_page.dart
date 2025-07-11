@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:metaverse_client/presentation/viewmodels/userinfo_viewmodel.dart';
+import 'package:metaverse_client/presentation/home/view_models/userinfo_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'package:metaverse_client/routes/app_router.dart';

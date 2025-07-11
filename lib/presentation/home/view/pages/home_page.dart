@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:metaverse_client/presentation/widgets/category_selector.dart';
+import 'package:metaverse_client/presentation/home/view/widgets/category_selector.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/home_viewmodel.dart';
+import '../../view_models/home_viewmodel.dart';
 import '../widgets/video_card.dart';
 
 class HomePage extends StatelessWidget {

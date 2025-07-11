@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:metaverse_client/domain/entities/category_entity.dart';
 import 'package:provider/provider.dart';
-import 'package:metaverse_client/presentation/viewmodels/category_viewmodel.dart';
+import 'package:metaverse_client/presentation/home/view_models/category_viewmodel.dart';
 
 // 分类选择器组件
 class CategorySelector extends StatefulWidget {

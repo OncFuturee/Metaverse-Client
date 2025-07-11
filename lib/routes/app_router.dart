@@ -3,15 +3,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:metaverse_client/routes/auth_guard.dart';
 
 // 导入你的页面
-import 'package:metaverse_client/presentation/screen/main_screen.dart';
-import 'package:metaverse_client/presentation/screen/login_screen.dart';
-import 'package:metaverse_client/presentation/screen/search_screen.dart';
-import 'package:metaverse_client/presentation/screen/profile/history_screen.dart';
-import 'package:metaverse_client/presentation/screen/profile/favorites_screen.dart';
-import 'package:metaverse_client/presentation/screen/profile/downloads_screen.dart';
-import 'package:metaverse_client/presentation/screen/profile/settings_screen.dart';
-import 'package:metaverse_client/presentation/screen/profile/user_info_screen.dart';
-import 'package:metaverse_client/presentation/screen/profile/about_screen.dart';
+import 'package:metaverse_client/presentation/home/view/home_screen.dart';
+import 'package:metaverse_client/presentation/auth/login/view/login_screen.dart';
+import 'package:metaverse_client/presentation/search/view/search_screen.dart';
+import 'package:metaverse_client/presentation/home/view/history_screen.dart';
+import 'package:metaverse_client/presentation/home/view/favorites_screen.dart';
+import 'package:metaverse_client/presentation/home/view/downloads_screen.dart';
+import 'package:metaverse_client/presentation/home/view/settings_screen.dart';
+import 'package:metaverse_client/presentation/home/view/userinfo_screen.dart';
+import 'package:metaverse_client/presentation/home/view/about_screen.dart';
 
 part 'app_router.gr.dart'; // 这将被自动生成
 

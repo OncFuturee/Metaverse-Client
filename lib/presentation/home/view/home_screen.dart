@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 
-import 'package:metaverse_client/presentation/pages/home_page.dart';
-import 'package:metaverse_client/presentation/pages/profile_drawer_page.dart';
-import 'package:metaverse_client/presentation/pages/profile_page.dart';
+import 'package:metaverse_client/presentation/home/view/pages/home_page.dart';
+import 'package:metaverse_client/presentation/home/view/pages/profile_drawer_page.dart';
+import 'package:metaverse_client/presentation/home/view/pages/profile_page.dart';
 
 @RoutePage()
 class MainScreen extends StatefulWidget {
