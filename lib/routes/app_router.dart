@@ -5,6 +5,7 @@ import 'package:metaverse_client/routes/auth_guard.dart';
 // 导入你的页面
 import 'package:metaverse_client/presentation/home/view/home_screen.dart';
 import 'package:metaverse_client/presentation/auth/login/view/login_screen.dart';
+import 'package:metaverse_client/presentation/auth/login/view/register_screen.dart';
 import 'package:metaverse_client/presentation/search/view/search_screen.dart';
 import 'package:metaverse_client/presentation/home/view/history_screen.dart';
 import 'package:metaverse_client/presentation/home/view/favorites_screen.dart';
@@ -32,5 +33,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: SettingsRoute.page, path: '/settings', guards: [authGuard]),
         AutoRoute(page: UserInfoRoute.page, path: '/user-info/:id', guards: [authGuard]), // 带有参数的路由
         AutoRoute(page: AboutRoute.page, path: '/about'),
+        AutoRoute(page: RegisterRoute.page, path: '/register'),
       ];
 }

@@ -11,167 +11,16 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
-  int _loginType = 0; // 0:账号密码 1:短信 2:第三方
-  final _accountController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _smsController = TextEditingController();
-
-  late AnimationController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
-  }
+  bool _rememberMe = false;
 
   @override
   void dispose() {
-    _accountController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
-    _phoneController.dispose();
-    _smsController.dispose();
-    _tabController.dispose();
     super.dispose();
-  }
-
-  Widget _buildLoginForm(LoginViewModel vm) {
-    switch (_loginType) {
-      case 0:
-        return FadeTransition(
-          opacity: _tabController,
-          child: Column(
-            children: [
-              TextField(
-                controller: _accountController,
-                decoration: const InputDecoration(labelText: '账号'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: '密码'),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: vm.isLoading
-                    ? null
-                    : () async {
-                        FocusScope.of(context).unfocus();
-                        await vm.loginWithPassword(_accountController.text, _passwordController.text);
-                        if (vm.isSuccess) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('登录成功')));
-                        } else if (vm.errorMsg.isNotEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMsg)));
-                        }
-                      },
-                child: vm.isLoading ? const CircularProgressIndicator() : const Text('账号密码登录'),
-              ),
-            ],
-          ),
-        );
-      case 1:
-        return FadeTransition(
-          opacity: _tabController,
-          child: Column(
-            children: [
-              TextField(
-                controller: _phoneController,
-                decoration: const InputDecoration(labelText: '手机号'),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _smsController,
-                      decoration: const InputDecoration(labelText: '验证码'),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: vm.isSmsSending
-                        ? null
-                        : () async {
-                            await vm.sendSms(_phoneController.text);
-                            if (vm.errorMsg.isNotEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMsg)));
-                            }
-                          },
-                    child: vm.isSmsSending ? const CircularProgressIndicator() : const Text('获取验证码'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: vm.isLoading
-                    ? null
-                    : () async {
-                        FocusScope.of(context).unfocus();
-                        await vm.loginWithSms(_phoneController.text, _smsController.text);
-                        if (vm.isSuccess) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('登录成功')));
-                        } else if (vm.errorMsg.isNotEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMsg)));
-                        }
-                      },
-                child: vm.isLoading ? const CircularProgressIndicator() : const Text('短信验证码登录'),
-              ),
-            ],
-          ),
-        );
-      case 2:
-        return FadeTransition(
-          opacity: _tabController,
-          child: Column(
-            children: [
-              const Text('第三方账号登录', style: TextStyle(fontSize: 18)),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Image.asset('assets/qq.png', width: 40),
-                    onPressed: () async {
-                      await vm.loginWithThirdParty('qq');
-                      if (vm.isSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('QQ登录成功')));
-                      } else if (vm.errorMsg.isNotEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMsg)));
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: Image.asset('assets/wechat.png', width: 40),
-                    onPressed: () async {
-                      await vm.loginWithThirdParty('wechat');
-                      if (vm.isSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('微信登录成功')));
-                      } else if (vm.errorMsg.isNotEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMsg)));
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: Image.asset('assets/weibo.png', width: 40),
-                    onPressed: () async {
-                      await vm.loginWithThirdParty('weibo');
-                      if (vm.isSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('微博登录成功')));
-                      } else if (vm.errorMsg.isNotEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMsg)));
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      default:
-        return const SizedBox.shrink();
-    }
   }
 
   @override
@@ -181,56 +30,193 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       child: Consumer<LoginViewModel>(
         builder: (context, vm, _) {
           return Scaffold(
-            appBar: AppBar(title: const Text('登录')),
-            body: Center(
-              child: SingleChildScrollView(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 350),
-                  child: Column(
-                    key: ValueKey(_loginType),
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ToggleButtons(
-                        isSelected: [
-                          _loginType == 0,
-                          _loginType == 1,
-                          _loginType == 2,
-                        ],
-                        borderRadius: BorderRadius.circular(8),
-                        onPressed: (index) {
-                          setState(() {
-                            _loginType = index;
-                            _tabController.forward(from: 0);
-                          });
-                        },
-                        children: const [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text('账号密码'),
+            body: Container(
+              decoration: const BoxDecoration(
+                // 使用BoxDecoration来应用渐变
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFF6E9DB), Color(0xFFEDEAFF)],
+                ),
+              ),
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.shield, size: 56, color: Colors.blue),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text('短信登录'),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Enter your email and password to log in',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 24),
+                        TextField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            hintText: 'Email',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.email),
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text('第三方'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Password',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.lock),
+                            suffixIcon: Icon(Icons.visibility_off),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      AnimatedSize(
-                        duration: const Duration(milliseconds: 350),
-                        curve: Curves.easeInOut,
-                        child: _buildLoginForm(vm),
-                      ),
-                    ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                            ),
+                            const Text('Remember me'),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {
+                                // TODO: Forgot password logic
+                              },
+                              child: const Text('Forgot Password ?'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed:
+                                vm.isLoading
+                                    ? null
+                                    : () async {
+                                      FocusScope.of(context).unfocus();
+                                      await vm.loginWithPassword(
+                                        _emailController.text,
+                                        _passwordController.text,
+                                      );
+                                      if (vm.isSuccess) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(content: Text('登录成功')),
+                                        );
+                                      } else if (vm.errorMsg.isNotEmpty) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(content: Text(vm.errorMsg)),
+                                        );
+                                      }
+                                    },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child:
+                                vm.isLoading
+                                    ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                    : const Text(
+                                      'Log In',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Or login with',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _socialLoginButton('assets/google.png'),
+                            _socialLoginButton('assets/facebook.png'),
+                            _socialLoginButton('assets/apple.png'),
+                            _socialLoginButton('assets/phone.png'),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        GestureDetector(
+                          onTap: () {
+                            context.router.pushNamed('/register');
+                          },
+                          child: const Text.rich(
+                            TextSpan(
+                              text: "Don't have an account? ",
+                              children: [
+                                TextSpan(
+                                  text: 'Sign Up',
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _socialLoginButton(String assetPath) {
+    return InkWell(
+      onTap: () {
+        // TODO: Third party login
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 48,
+        height: 48,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Image.asset(assetPath),
       ),
     );
   }

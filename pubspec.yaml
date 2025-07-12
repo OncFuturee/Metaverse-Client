@@ -38,6 +38,7 @@ dependencies:
   dartz: ^0.10.1
   auto_route: ^7.0.2
   
+  
   # UI组件
   cupertino_icons: ^1.0.8
 
@@ -70,6 +71,10 @@ flutter:
     - assets/qq.png
     - assets/wechat.png
     - assets/weibo.png
+    - assets/google.png
+    - assets/apple.png
+    - assets/phone.png
+    - assets/facebook.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
