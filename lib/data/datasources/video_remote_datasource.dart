@@ -8,10 +8,10 @@ class VideoRemoteDataSource {
     return List.generate(10, (i) => VideoModel(
       id: '$category-$i',
       title: '$category 视频标题 $i',
-      coverUrl: 'https://picsum.photos/seed/${Random().nextInt(1000)}/300/225',
+      coverUrl: 'https://picsum.photos/300/225?random=${Random().nextInt(1000)}',
       videoUrl: 'https://www.example.com/video${Random().nextInt(1000)}.mp4',
       category: category,
-      authorAvatar: 'https://picsum.photos/seed/${Random().nextInt(1000)}/200/200',
+      authorAvatar: 'https://picsum.photos/200/200?random=${Random().nextInt(1000)}',
       authorName: '作者 $i',
     ));
   }

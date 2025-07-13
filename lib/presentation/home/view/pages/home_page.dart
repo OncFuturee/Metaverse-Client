@@ -27,7 +27,7 @@ class HomePage extends StatelessWidget {
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(
                       // 随机头像图片
-                      'https://picsum.photos/seed/${Random().nextInt(1000)}/200/200',
+                      'https://picsum.photos/300/300?random=${Random().nextInt(1000)}',
                     ),
                     radius: 20,
                   ),
