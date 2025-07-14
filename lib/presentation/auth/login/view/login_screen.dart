@@ -1,7 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../view_models/login_viewmodel.dart';
 
 @RoutePage()
 class LoginScreen extends StatefulWidget {
@@ -12,211 +10,343 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
   bool _rememberMe = false;
+
+  // 为每个 TextField 定义 FocusNode
+  late FocusNode _emailFocusNode;
+  late FocusNode _passwordFocusNode;
+
+  // 定义颜色
+  final Color _focusedColor = const Color(0xFFff4d67); // 你的主题色，即登录按钮的颜色
+  // _focusedColor 的淡一点的版本，这里使用了 0x1A 作为透明度（大约 10%）
+  final Color _focusedFillColor = const Color(0x1Aff4d67);
+  final Color _defaultFillColor = const Color(0xFFFAFAFA);
+  final Color _defaultIconColor = Colors.grey;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode = FocusNode();
+    _passwordFocusNode = FocusNode();
+
+    // 添加监听器，当焦点改变时触发重绘
+    _emailFocusNode.addListener(_onFocusChange);
+    _passwordFocusNode.addListener(_onFocusChange);
+  }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    // 移除监听器并释放 FocusNode 资源，避免内存泄漏
+    _emailFocusNode.removeListener(_onFocusChange);
+    _passwordFocusNode.removeListener(_onFocusChange);
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
+  }
+
+  // 焦点改变时调用此方法，触发 UI 更新
+  void _onFocusChange() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
-      child: Consumer<LoginViewModel>(
-        builder: (context, vm, _) {
-          return Scaffold(
-            body: Container(
-              decoration: const BoxDecoration(
-                // 使用BoxDecoration来应用渐变
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFF6E9DB), Color(0xFFEDEAFF)],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      // 将整个 body 包裹在 GestureDetector 中
+      body: GestureDetector(
+        onTap: () {
+          // 当点击非输入框区域时，移除当前焦点
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          // 滚动视图 SingleChildScrollView 以处理内容溢出
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+
+                // 标题
+                const Text(
+                  'Login to your Account',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
-              ),
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
+
+                const SizedBox(height: 32),
+
+                // 邮箱输入框
+                TextField(
+                  focusNode: _emailFocusNode, // 绑定焦点节点
+                  decoration: InputDecoration(
+                    filled: true,
+                    // 根据焦点状态改变填充颜色
+                    fillColor:
+                        _emailFocusNode.hasFocus
+                            ? _focusedFillColor
+                            : _defaultFillColor,
+                    // 根据焦点状态改变图标颜色
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color:
+                          _emailFocusNode.hasFocus
+                              ? _focusedColor
+                              : _defaultIconColor,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.shield, size: 56, color: Colors.blue),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Enter your email and password to log in',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 24),
-                        TextField(
-                          controller: _emailController,
-                          decoration: const InputDecoration(
-                            hintText: 'Email',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.email),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Password',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.lock),
-                            suffixIcon: Icon(Icons.visibility_off),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  _rememberMe = value ?? false;
-                                });
-                              },
-                            ),
-                            const Text('Remember me'),
-                            const Spacer(),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Forgot password logic
-                              },
-                              child: const Text('Forgot Password ?'),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed:
-                                vm.isLoading
-                                    ? null
-                                    : () async {
-                                      FocusScope.of(context).unfocus();
-                                      await vm.loginWithPassword(
-                                        _emailController.text,
-                                        _passwordController.text,
-                                      );
-                                      if (vm.isSuccess) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(content: Text('登录成功')),
-                                        );
-                                      } else if (vm.errorMsg.isNotEmpty) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(content: Text(vm.errorMsg)),
-                                        );
-                                      }
-                                    },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child:
-                                vm.isLoading
-                                    ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
-                                    : const Text(
-                                      'Log In',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Or login with',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _socialLoginButton('assets/google.png'),
-                            _socialLoginButton('assets/facebook.png'),
-                            _socialLoginButton('assets/apple.png'),
-                            _socialLoginButton('assets/phone.png'),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        GestureDetector(
-                          onTap: () {
-                            context.router.pushNamed('/register');
-                          },
-                          child: const Text.rich(
-                            TextSpan(
-                              text: "Don't have an account? ",
-                              children: [
-                                TextSpan(
-                                  text: 'Sign Up',
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    hintText: 'Email',
+                    // 默认边框
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color:
+                            _emailFocusNode.hasFocus
+                                ? _focusedColor
+                                : Colors.transparent,
+                      ),
+                    ),
+                    // 未启用时的边框
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color:
+                            _emailFocusNode.hasFocus
+                                ? _focusedColor
+                                : Colors.transparent,
+                      ),
+                    ),
+                    // 获取焦点时的边框
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color:
+                            _emailFocusNode.hasFocus
+                                ? _focusedColor
+                                : Colors.transparent,
+                      ),
                     ),
                   ),
                 ),
-              ),
+
+                const SizedBox(height: 16),
+
+                // 密码输入框
+                TextField(
+                  focusNode: _passwordFocusNode, // 绑定焦点节点
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    filled: true,
+                    // 根据焦点状态改变填充颜色
+                    fillColor:
+                        _passwordFocusNode.hasFocus
+                            ? _focusedFillColor
+                            : _defaultFillColor,
+                    // 根据焦点状态改变图标颜色
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color:
+                          _passwordFocusNode.hasFocus
+                              ? _focusedColor
+                              : _defaultIconColor,
+                    ),
+                    hintText: 'Password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color:
+                            _passwordFocusNode.hasFocus
+                                ? _focusedColor
+                                : _defaultIconColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    // 默认边框
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color:
+                            _passwordFocusNode.hasFocus
+                                ? _focusedColor
+                                : Colors.transparent,
+                      ),
+                    ),
+                    // 未启用时的边框
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color:
+                            _passwordFocusNode.hasFocus
+                                ? _focusedColor
+                                : Colors.transparent,
+                      ),
+                    ),
+                    // 获取焦点时的边框
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color:
+                            _passwordFocusNode.hasFocus
+                                ? _focusedColor
+                                : Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // 记住我
+                Row(
+                  children: [
+                    Checkbox(
+                      activeColor: _focusedColor, // 复选框的激活颜色也与主题色保持一致
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value!;
+                        });
+                      },
+                    ),
+                    const Text('保持登录'),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // 登录按钮
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _focusedColor, // 登录按钮的颜色
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                  onPressed: () {
+                    // 处理登录逻辑
+                  },
+                  child: const Text(
+                    'Sign in',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+
+                // 忘记密码
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // 处理忘记密码逻辑
+                    },
+                    child: const Text(
+                      '忘记密码?',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // 分隔线
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey[400])),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text('第三方登录'),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey[400])),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // 第三方登录（使用图片）
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildSocialButton(
+                      imagePath: 'assets/facebook.png', // 替换为实际图片路径
+                      onTap: () {},
+                    ),
+                    _buildSocialButton(
+                      imagePath: 'assets/google.png', // 替换为实际图片路径
+                      onTap: () {},
+                    ),
+                    _buildSocialButton(
+                      imagePath: 'assets/apple.png', // 替换为实际图片路径
+                      onTap: () {},
+                    ),
+                    _buildSocialButton(
+                      imagePath: 'assets/phone.png', // 替换为实际图片路径
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // 注册链接
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("还没有账号? "),
+                    TextButton(
+                      onPressed: () {
+                        // 处理注册逻辑
+                        context.router.pushNamed('/register');
+                      },
+                      child: const Text(
+                        '现在注册',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _socialLoginButton(String assetPath) {
-    return InkWell(
-      onTap: () {
-        // TODO: Third party login
-      },
-      borderRadius: BorderRadius.circular(12),
+  // 构建第三方登录按钮（使用图片）
+  Widget _buildSocialButton({
+    required String imagePath,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        width: 48,
-        height: 48,
-        padding: const EdgeInsets.all(8),
+        width: 56,
+        height: 56,
         decoration: BoxDecoration(
+          shape: BoxShape.circle,
           border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
         ),
-        child: Image.asset(assetPath),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Center(
+            child: Image.asset(imagePath, fit: BoxFit.contain),
+          )
+        ),
       ),
     );
   }
