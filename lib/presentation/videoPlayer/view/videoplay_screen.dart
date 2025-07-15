@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -17,7 +20,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 //   MediaKit.ensureInitialized(); // 必须初始化 media_kit
 //   runApp(const MyApp());
 // }
-
+@RoutePage()
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
 
@@ -26,12 +29,19 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late final Player player = Player();
+  late final Player player = Player(
+      configuration: const PlayerConfiguration(
+      bufferSize: 64 * 1024 * 1024, // 尝试更大的缓冲区，例如 64MB
+      protocolWhitelist: [ // 确保包含所有可能需要的协议
+        'file', 'http', 'https', 'tcp', 'tls', 'crypto', 'hls', 'applehttp', 'udp', 'rtp', 'data', 'httpproxy'
+      ],
+    ),
+  );
   late final VideoController controller = VideoController(player);
 
   // 示例视频URL，请替换为你的实际视频URL
   String videoUrl =
-      'https://user-images.githubusercontent.com/28951144/229373695-22f88f13-d18f-4288-9bf1-c3e078d83722.mp4';
+      'https://kv-h.phncdn.com/hls/videos/202212/31/422401111/1080P_8000K_422401111.mp4/master.m3u8?hdnea=st=1752603901~exp=1752607501~hdl=-1~hmac=917bc774f572cd1fb075485945c589575bc06c87';
 
   @override
   void initState() {
@@ -98,64 +108,68 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              StreamBuilder<PlayerState>(
-                stream: player.stream.player,
-                builder: (context, snapshot) {
-                  final playerState = snapshot.data;
-                  final position = playerState?.position ?? Duration.zero;
-                  final duration = playerState?.duration ?? Duration.zero;
-
-                  return Column(
-                    children: [
-                      // 进度条
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: 2.0,
-                          thumbShape:
-                              const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                          overlayShape:
-                              const RoundSliderOverlayShape(overlayRadius: 12.0),
-                        ),
-                        child: Slider(
-                          min: 0.0,
-                          max: duration.inMilliseconds.toDouble(),
-                          value: position.inMilliseconds
-                              .clamp(0, duration.inMilliseconds)
-                              .toDouble(),
-                          onChanged: (value) {
-                            player.seek(Duration(milliseconds: value.toInt()));
-                          },
-                          activeColor: Colors.red,
-                          inactiveColor: Colors.white54,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // 播放/暂停按钮
-                            IconButton(
-                              icon: Icon(
-                                playerState?.playing == true
-                                    ? Icons.pause_circle_filled
-                                    : Icons.play_circle_filled,
-                                color: Colors.white,
-                                size: 36,
-                              ),
-                              onPressed: () {
-                                player.playOrPause();
+              StreamBuilder<Duration>(
+                stream: player.stream.position,
+                builder: (context, positionSnapshot) {
+                  final position = positionSnapshot.data ?? Duration.zero;
+                  return StreamBuilder<bool>(
+                    stream: player.stream.playing,
+                    builder: (context, playingSnapshot) {
+                      final isPlaying = playingSnapshot.data ?? false;
+                      final duration = player.state.duration;
+                      return Column(
+                        children: [
+                          // 进度条
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              trackHeight: 2.0,
+                              thumbShape:
+                                  const RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                              overlayShape:
+                                  const RoundSliderOverlayShape(overlayRadius: 12.0),
+                            ),
+                            child: Slider(
+                              min: 0.0,
+                              max: duration.inMilliseconds.toDouble(),
+                              value: position.inMilliseconds
+                                  .clamp(0, duration.inMilliseconds)
+                                  .toDouble(),
+                              onChanged: (value) {
+                                player.seek(Duration(milliseconds: value.toInt()));
                               },
+                              activeColor: Colors.red,
+                              inactiveColor: Colors.white54,
                             ),
-                            // 时间显示
-                            Text(
-                              '${_formatDuration(position)} / ${_formatDuration(duration)}',
-                              style: const TextStyle(color: Colors.white),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // 播放/暂停按钮
+                                IconButton(
+                                  icon: Icon(
+                                    isPlaying
+                                        ? Icons.pause_circle_filled
+                                        : Icons.play_circle_filled,
+                                    color: Colors.white,
+                                    size: 36,
+                                  ),
+                                  onPressed: () {
+                                    player.playOrPause();
+                                  },
+                                ),
+                                // 时间显示
+                                Text(
+                                  '${_formatDuration(position)} / ${_formatDuration(duration)}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
@@ -205,10 +219,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           // 作者信息
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 24,
                 backgroundImage:
-                    NetworkImage('https://via.placeholder.com/150'), // 替换为作者头像
+                    NetworkImage('https://picsum.photos/300/225?random=${Random().nextInt(1000)}'), // 替换为作者头像
               ),
               const SizedBox(width: 12),
               Column(
@@ -398,7 +412,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     '推荐视频标题 ${index + 1}',
                     style: TextStyle(

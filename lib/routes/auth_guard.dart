@@ -24,7 +24,7 @@ class AuthGuard extends AutoRouteGuard {
       router.push(LoginRoute()); // 导航到登录页面
       // 或者只是不进行导航并显示一个 SnackBar
       ScaffoldMessenger.of(router.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text('请先登录才能访问此页面！')),
+        SnackBar(content: Text('请先登录才能访问此页面！'), duration: Duration(milliseconds: 500),),
       );
       resolver.next(false); // 阻止导航
     }

@@ -281,19 +281,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildSocialButton(
-                      imagePath: 'assets/facebook.png', // 替换为实际图片路径
+                      imagePath: 'assets/icons/facebook.png', // 替换为实际图片路径
                       onTap: () {},
                     ),
                     _buildSocialButton(
-                      imagePath: 'assets/google.png', // 替换为实际图片路径
+                      imagePath: 'assets/icons/google.png', // 替换为实际图片路径
                       onTap: () {},
                     ),
                     _buildSocialButton(
-                      imagePath: 'assets/apple.png', // 替换为实际图片路径
+                      imagePath: 'assets/icons/apple.png', // 替换为实际图片路径
                       onTap: () {},
                     ),
                     _buildSocialButton(
-                      imagePath: 'assets/phone.png', // 替换为实际图片路径
+                      imagePath: 'assets/icons/phone.png', // 替换为实际图片路径
                       onTap: () {},
                     ),
                   ],

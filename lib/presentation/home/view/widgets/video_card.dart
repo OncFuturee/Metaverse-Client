@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/video.dart';
 
@@ -12,8 +13,9 @@ class VideoCard extends StatelessWidget {
       onTap: () {
         // 点击整体区域默认进入播放页面
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('进入视频播放页面'),duration: Duration(milliseconds: 100),),
+          SnackBar(content: Text('进入视频播放页面'),duration: Duration(milliseconds: 200),),
         );
+        context.router.pushNamed('/videoplayer');
       },
       child: Card(
         margin: const EdgeInsets.all(0),
@@ -38,6 +40,16 @@ class VideoCard extends StatelessWidget {
                   video.coverUrl,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  // 添加 errorBuilder
+                  errorBuilder: (context, error, stackTrace) {
+                    // 在图片加载失败时显示一个图标或占位符
+                    return Container(
+                      color: Colors.grey[300], // 可以是任何背景色
+                      child: Center(
+                        child: Image.asset('assets/images/null.png', fit: BoxFit.fill,),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -63,7 +75,7 @@ class VideoCard extends StatelessWidget {
                           onTap: () {
                             // 点击头像
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('点击了作者头像'),duration: Duration(milliseconds: 100),),
+                              SnackBar(content: Text('点击了作者头像'),duration: Duration(milliseconds: 200),),
                             );
                           },
                           child: CircleAvatar(
@@ -76,7 +88,7 @@ class VideoCard extends StatelessWidget {
                           onTap: () {
                             // 点击作者名字
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('点击了作者名字'),duration: Duration(milliseconds: 100),),
+                              SnackBar(content: Text('点击了作者名字'),duration: Duration(milliseconds: 200),),
                             );
                           },
                           child: Text(
@@ -92,7 +104,7 @@ class VideoCard extends StatelessWidget {
                           onTap: () {
                             // 点击更多按钮
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('点击了更多操作'),duration: Duration(milliseconds: 100),),
+                              SnackBar(content: Text('点击了更多操作'),duration: Duration(milliseconds: 200),),
                             );
                           },
                           child: Icon(Icons.more_vert, size: 20),

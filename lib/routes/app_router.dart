@@ -1,5 +1,6 @@
 // lib/router/app_router.dart
 import 'package:auto_route/auto_route.dart';
+import 'package:metaverse_client/presentation/videoPlayer/view/videoplay_screen.dart';
 import 'package:metaverse_client/routes/auth_guard.dart';
 
 // 导入你的页面
@@ -14,6 +15,7 @@ import 'package:metaverse_client/presentation/home/view/settings_screen.dart';
 import 'package:metaverse_client/presentation/home/view/userinfo_screen.dart';
 import 'package:metaverse_client/presentation/home/view/about_screen.dart';
 
+// 终端运行 flutter pub run build_runner build
 part 'app_router.gr.dart'; // 这将被自动生成
 
 @AutoRouterConfig()
@@ -34,5 +36,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: UserInfoRoute.page, path: '/user-info/:id', guards: [authGuard]), // 带有参数的路由
         AutoRoute(page: AboutRoute.page, path: '/about'),
         AutoRoute(page: RegisterRoute.page, path: '/register'),
+        AutoRoute(page: VideoPlayerRoute.page, path: '/videoplayer'),
       ];
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 
 import 'injection.dart';
@@ -11,6 +12,7 @@ import 'package:metaverse_client/presentation/home/view_models/userinfo_viewmode
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保Flutter引擎已初始化
+  MediaKit.ensureInitialized(); // 初始化 media_kit
   await configureDependencies();
   runApp(
     MultiProvider(
