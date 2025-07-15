@@ -62,7 +62,7 @@ class _MainPageState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.web_stories_outlined), 
-            label: '动态',
+            label: '图文',
             activeIcon: Icon(Icons.web_stories_rounded),
           ),
           BottomNavigationBarItem(
