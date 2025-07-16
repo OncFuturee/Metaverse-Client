@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:metaverse_client/presentation/videoPlayer/view_models/videoplay_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'injection.dart';
@@ -23,6 +24,7 @@ void main() async {
           storageKey: 'categories',
         )),
         ChangeNotifierProvider(create: (_) => UserinfoViewmodel()),
+        ChangeNotifierProvider(create: (_) => VideoPlayScreenViewModel()),
       ],
       child: MetaverseApp(),
     ),

@@ -4,6 +4,10 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:provider/provider.dart'; // 导入 provider 包
+
+// 导入你的 ViewModel
+import '../view_models/videoplay_screen_viewmodel.dart'; // 假设你的 ViewModel 文件在此路径
 
 // 你可能需要在你的 pubspec.yaml 中添加这些依赖：
 // dependencies:
@@ -13,13 +17,15 @@ import 'package:media_kit_video/media_kit_video.dart';
 //   media_kit_video: ^1.2.4
 //   media_kit_libs_video: ^1.0.4 # 针对桌面平台和Web，如果你不需要可以不加
 //   cupertino_icons: ^1.0.6
+//   provider: ^6.0.5 # 添加 provider 依赖
 
 // 在你的 main.dart 或应用程序启动文件中的适当位置调用此方法：
 // void main() {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   MediaKit.ensureInitialized(); // 必须初始化 media_kit
-//   runApp(const MyApp());
+//   runApp(const MyApp()); // 这里 MyApp 应该是一个 MultiProvider 的根
 // }
+
 @RoutePage()
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -30,24 +36,59 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late final Player player = Player(
-      configuration: const PlayerConfiguration(
+    configuration: const PlayerConfiguration(
       bufferSize: 64 * 1024 * 1024, // 尝试更大的缓冲区，例如 64MB
-      protocolWhitelist: [ // 确保包含所有可能需要的协议
-        'file', 'http', 'https', 'tcp', 'tls', 'crypto', 'hls', 'applehttp', 'udp', 'rtp', 'data', 'httpproxy'
+      protocolWhitelist: [
+        // 确保包含所有可能需要的协议
+        'file',
+        'http',
+        'https',
+        'tcp',
+        'tls',
+        'crypto',
+        'hls',
+        'applehttp',
+        'udp',
+        'rtp',
+        'data',
+        'httpproxy',
       ],
     ),
   );
   late final VideoController controller = VideoController(player);
 
-  // 示例视频URL，请替换为你的实际视频URL
-  String videoUrl =
-      'https://kv-h.phncdn.com/hls/videos/202212/31/422401111/1080P_8000K_422401111.mp4/master.m3u8?hdnea=st=1752603901~exp=1752607501~hdl=-1~hmac=917bc774f572cd1fb075485945c589575bc06c87';
+  // 不再在这里直接定义 videoUrl，而是从 ViewModel 获取
 
   @override
   void initState() {
     super.initState();
-    player.open(Media(videoUrl));
-    player.setVolume(100.0); // 默认音量
+    // 在这里通过 Provider 获取 ViewModel 实例并调用 fetchVideoUrl
+    // `listen: false` 表示我们只关心调用方法，不关心立即重建 UI
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<VideoPlayScreenViewModel>(
+        context,
+        listen: false,
+      );
+      // 传入你想要获取的视频的 viewKey
+      viewModel.fetchVideoUrl('654ba607ead0b'); // 替换为实际的 viewKey
+    });
+
+    // 监听 ViewModel 的 videoUrl 变化，并在变化时更新播放器
+    player.stream.error.listen((error) {
+      debugPrint('MediaKit Player Error: $error');
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 在这里监听 ViewModel 的 videoUrl 变化
+    final viewModel = Provider.of<VideoPlayScreenViewModel>(context);
+    if (viewModel.videoUrl != null && (player.state.playlist.medias.isEmpty ? null : player.state.playlist.medias[0].uri) != viewModel.videoUrl) {
+      debugPrint('ViewModel 提供的 videoUrl 已更新: ${viewModel.videoUrl}');
+      player.open(Media(viewModel.videoUrl!));
+      player.setVolume(100.0); // 默认音量
+    }
   }
 
   @override
@@ -58,6 +99,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 使用 Consumer 来监听 ViewModel 的状态变化并更新 UI
     return Scaffold(
       backgroundColor: Colors.black, // 背景色，让视频播放器区域更突出
       body: SafeArea(
@@ -68,7 +110,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               aspectRatio: 16 / 9, // 常见的视频比例
               child: Stack(
                 children: [
-                  Video(controller: controller),
+                  Consumer<VideoPlayScreenViewModel>(
+                    builder: (context, viewModel, child) {
+                      if (viewModel.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (viewModel.errorMessage != null) {
+                        return Center(
+                          child: Text(
+                            '加载视频失败: ${viewModel.errorMessage}',
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      } else if (viewModel.videoUrl != null) {
+                        // 视频 URL 已经成功加载，显示视频播放器
+                        return Video(controller: controller);
+                      } else {
+                        // 初始状态或未加载完成
+                        return const Center(
+                          child: Text(
+                            '正在获取视频URL...',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                   _buildVideoControlsOverlay(),
                   _buildTopRightMenu(),
                 ],
@@ -123,26 +193,33 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           SliderTheme(
                             data: SliderTheme.of(context).copyWith(
                               trackHeight: 2.0,
-                              thumbShape:
-                                  const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                              overlayShape:
-                                  const RoundSliderOverlayShape(overlayRadius: 12.0),
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 6.0,
+                              ),
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 12.0,
+                              ),
                             ),
                             child: Slider(
                               min: 0.0,
                               max: duration.inMilliseconds.toDouble(),
-                              value: position.inMilliseconds
-                                  .clamp(0, duration.inMilliseconds)
-                                  .toDouble(),
+                              value:
+                                  position.inMilliseconds
+                                      .clamp(0, duration.inMilliseconds)
+                                      .toDouble(),
                               onChanged: (value) {
-                                player.seek(Duration(milliseconds: value.toInt()));
+                                player.seek(
+                                  Duration(milliseconds: value.toInt()),
+                                );
                               },
                               activeColor: Colors.red,
                               inactiveColor: Colors.white54,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -191,20 +268,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           // 处理菜单选择逻辑
           debugPrint('菜单选择: $value');
         },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          const PopupMenuItem<String>(
-            value: 'share',
-            child: Text('分享'),
-          ),
-          const PopupMenuItem<String>(
-            value: 'report',
-            child: Text('举报'),
-          ),
-          const PopupMenuItem<String>(
-            value: 'settings',
-            child: Text('设置'),
-          ),
-        ],
+        itemBuilder:
+            (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(value: 'share', child: Text('分享')),
+              const PopupMenuItem<String>(value: 'report', child: Text('举报')),
+              const PopupMenuItem<String>(value: 'settings', child: Text('设置')),
+            ],
       ),
     );
   }
@@ -221,8 +290,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundImage:
-                    NetworkImage('https://picsum.photos/300/225?random=${Random().nextInt(1000)}'), // 替换为作者头像
+                backgroundImage: NetworkImage(
+                  'https://picsum.photos/300/225?random=${Random().nextInt(1000)}',
+                ), // 替换为作者头像
               ),
               const SizedBox(width: 12),
               Column(
@@ -231,9 +301,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   Text(
                     '视频作者昵称',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   Text(
                     '粉丝 12.3万 | 视频 56',
@@ -264,22 +335,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           const Text(
             '这里是视频的精彩标题，可能很长很吸引人！',
             style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 8),
           // 播放量、弹幕数、发布时间
           Row(
             children: const [
-              Text('播放 123.4万',
-                  style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text(
+                '播放 123.4万',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
               SizedBox(width: 16),
-              Text('弹幕 5.6万',
-                  style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text(
+                '弹幕 5.6万',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
               SizedBox(width: 16),
-              Text('2025-07-15 发布',
-                  style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text(
+                '2025-07-15 发布',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -348,9 +426,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           const Text(
             '推荐视频',
             style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 10),
           // 推荐视频列表 (这里使用一个简单的ListView作为占位符)
@@ -416,13 +495,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   Text(
                     '推荐视频标题 ${index + 1}',
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     '作者名 • 12小时前 • 5.6万次播放',
                     style: TextStyle(fontSize: 12, color: Colors.grey),
