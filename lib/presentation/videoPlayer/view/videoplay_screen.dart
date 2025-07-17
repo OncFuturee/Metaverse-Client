@@ -28,7 +28,9 @@ import '../view_models/videoplay_screen_viewmodel.dart'; // 假设你的 ViewMod
 
 @RoutePage()
 class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({super.key});
+  // 视频网页链接
+  final String videoUrl;
+  const VideoPlayerScreen({super.key, required this.videoUrl});
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -70,7 +72,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         listen: false,
       );
       // 传入你想要获取的视频的 viewKey
-      viewModel.fetchVideoUrl('654ba607ead0b'); // 替换为实际的 viewKey
+      viewModel.fetchVideoUrl(widget.videoUrl); // 替换为实际的 viewKey
     });
 
     // 监听 ViewModel 的 videoUrl 变化，并在变化时更新播放器

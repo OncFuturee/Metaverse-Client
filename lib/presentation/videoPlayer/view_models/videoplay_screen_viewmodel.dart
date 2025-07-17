@@ -11,15 +11,13 @@ class VideoPlayScreenViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchVideoUrl(String viewKey) async {
+  Future<void> fetchVideoUrl(String videoUrl) async {
     _isLoading = true;
     _errorMessage = null; // Clear previous errors
     _videoUrl = null; // Clear previous video URL
     notifyListeners(); // Notify listeners that loading has started
 
-    final url = Uri.parse(
-      'https://cn.pornhub.com/view_video.php?viewkey=$viewKey',
-    );
+    final url = Uri.parse(videoUrl);
 
     try {
       final response = await http.get(url);
@@ -27,7 +25,7 @@ class VideoPlayScreenViewModel extends ChangeNotifier {
       if (response.statusCode == 200) {
         final htmlContent = response.body;
 
-        debugPrint(htmlContent);
+        //debugPrint(htmlContent);
 
         // 正则表达式匹配包含 "1080P" 字符的 videoUrl
         // 注意：这里我们匹配的是整个包含 videoUrl 的 JSON 片段

@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/routes/app_router.dart';
 import '../../../../domain/entities/video.dart';
 
 class VideoCard extends StatelessWidget {
@@ -15,7 +16,7 @@ class VideoCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('进入视频播放页面'),duration: Duration(milliseconds: 200),),
         );
-        context.router.pushNamed('/videoplayer');
+        context.pushRoute(VideoPlayerRoute(videoUrl: video.videoUrl));
       },
       child: Card(
         margin: const EdgeInsets.all(0),
