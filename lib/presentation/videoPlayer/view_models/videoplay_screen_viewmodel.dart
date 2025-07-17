@@ -32,7 +32,7 @@ class VideoPlayScreenViewModel extends ChangeNotifier {
         // 正则表达式匹配包含 "1080P" 字符的 videoUrl
         // 注意：这里我们匹配的是整个包含 videoUrl 的 JSON 片段
         // 然后再从这个片段中提取 videoUrl。
-        // 这是为了更精确地匹配包含 "1080P" 的目标 JSON 对象。
+        // 这是为了更精确地匹配包含 "1080P" 的目标 JSON 对象。 查找主页视频的正则：<ul class="[^>]*?videos[^>]*?>[\s\S]*?</ul>
         final regExp = RegExp(
           r'"videoUrl":"(https:\\/\\/.*\\/1080P.*.mp4\\/master.m3u8\?.*)","quality":"1080"}',
         );

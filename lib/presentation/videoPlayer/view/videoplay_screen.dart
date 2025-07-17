@@ -77,6 +77,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     player.stream.error.listen((error) {
       debugPrint('MediaKit Player Error: $error');
     });
+
+    
   }
 
   @override
@@ -86,7 +88,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final viewModel = Provider.of<VideoPlayScreenViewModel>(context);
     if (viewModel.videoUrl != null && (player.state.playlist.medias.isEmpty ? null : player.state.playlist.medias[0].uri) != viewModel.videoUrl) {
       debugPrint('ViewModel 提供的 videoUrl 已更新: ${viewModel.videoUrl}');
-      player.open(Media(viewModel.videoUrl!));
+      player.open(Media(viewModel.videoUrl!),play: false);
       player.setVolume(100.0); // 默认音量
     }
   }
