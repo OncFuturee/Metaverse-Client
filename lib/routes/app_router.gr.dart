@@ -75,6 +75,18 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const UserInfoPage(),
       );
     },
+    VideoPlayerFullRoute.name: (routeData) {
+      final args = routeData.argsAs<VideoPlayerFullRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: VideoPlayerFullScreen(
+          key: args.key,
+          player: args.player,
+          videoUrl: args.videoUrl,
+          preferredOrientation: args.preferredOrientation,
+        ),
+      );
+    },
     VideoPlayerRoute.name: (routeData) {
       final args = routeData.argsAs<VideoPlayerRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -226,6 +238,54 @@ class UserInfoRoute extends PageRouteInfo<void> {
   static const String name = 'UserInfoRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [VideoPlayerFullScreen]
+class VideoPlayerFullRoute extends PageRouteInfo<VideoPlayerFullRouteArgs> {
+  VideoPlayerFullRoute({
+    Key? key,
+    required Player player,
+    required String videoUrl,
+    required DeviceOrientation preferredOrientation,
+    List<PageRouteInfo>? children,
+  }) : super(
+          VideoPlayerFullRoute.name,
+          args: VideoPlayerFullRouteArgs(
+            key: key,
+            player: player,
+            videoUrl: videoUrl,
+            preferredOrientation: preferredOrientation,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'VideoPlayerFullRoute';
+
+  static const PageInfo<VideoPlayerFullRouteArgs> page =
+      PageInfo<VideoPlayerFullRouteArgs>(name);
+}
+
+class VideoPlayerFullRouteArgs {
+  const VideoPlayerFullRouteArgs({
+    this.key,
+    required this.player,
+    required this.videoUrl,
+    required this.preferredOrientation,
+  });
+
+  final Key? key;
+
+  final Player player;
+
+  final String videoUrl;
+
+  final DeviceOrientation preferredOrientation;
+
+  @override
+  String toString() {
+    return 'VideoPlayerFullRouteArgs{key: $key, player: $player, videoUrl: $videoUrl, preferredOrientation: $preferredOrientation}';
+  }
 }
 
 /// generated route for

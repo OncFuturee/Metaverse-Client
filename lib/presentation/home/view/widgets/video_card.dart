@@ -63,11 +63,7 @@ class VideoCard extends StatelessWidget {
                   children: [
                     // 视频简介标题
                     Expanded(
-                      child: Text(
-                        video.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      child: Text(video.title,maxLines: 2,overflow: TextOverflow.ellipsis,),
                     ),
                     // 作者信息和操作按钮
                     Row(
@@ -85,22 +81,24 @@ class VideoCard extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
-                            // 点击作者名字
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('点击了作者名字'),duration: Duration(milliseconds: 200),),
-                            );
-                          },
-                          child: Text(
-                            video.authorName,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[700],
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              // 点击作者名字
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('点击了作者名字'),
+                                  duration: Duration(milliseconds: 200),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              video.authorName,
+                              maxLines: 1, // 保持这个，确保单行
+                              style: TextStyle(fontSize: 13,color: Colors.grey[700],overflow: TextOverflow.ellipsis,),
                             ),
                           ),
                         ),
-                        Expanded(child: SizedBox()),
                         GestureDetector(
                           onTap: () {
                             // 点击更多按钮

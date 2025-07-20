@@ -1,8 +1,9 @@
 // lib/router/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:metaverse_client/presentation/videoPlayer/view/videoplay_screen.dart';
 import 'package:metaverse_client/routes/auth_guard.dart';
+import 'package:media_kit/media_kit.dart'; // 导入 Player
+import 'package:flutter/services.dart'; // 导入 DeviceOrientation
 
 // 导入你的页面
 import 'package:metaverse_client/presentation/home/view/home_screen.dart';
@@ -15,6 +16,8 @@ import 'package:metaverse_client/presentation/home/view/downloads_screen.dart';
 import 'package:metaverse_client/presentation/home/view/settings_screen.dart';
 import 'package:metaverse_client/presentation/home/view/userinfo_screen.dart';
 import 'package:metaverse_client/presentation/home/view/about_screen.dart';
+import 'package:metaverse_client/presentation/videoPlayer/view/videoplay_screen.dart';
+import 'package:metaverse_client/presentation/videoPlayer/view/videoplay_fullscreen.dart';
 
 // 终端运行 flutter pub run build_runner build
 part 'app_router.gr.dart'; // 这将被自动生成
@@ -38,5 +41,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: AboutRoute.page, path: '/about'),
         AutoRoute(page: RegisterRoute.page, path: '/register'),
         AutoRoute(page: VideoPlayerRoute.page, path: '/videoplayer'),
+        AutoRoute(page: VideoPlayerFullRoute.page, path: '/videoplayer/fullscreen'),
       ];
 }

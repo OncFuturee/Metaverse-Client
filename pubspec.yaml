@@ -37,9 +37,9 @@ dependencies:
   hive: ^2.2.3
   dartz: ^0.10.1
   auto_route: ^7.0.2
-  media_kit: ^1.1.10
-  media_kit_video: ^1.2.4
-  media_kit_libs_video: ^1.0.4 # 针对桌面平台和Web，如果你不需要可以不加
+  media_kit: ^1.2.0
+  media_kit_video: ^1.3.0
+  media_kit_libs_video: ^1.0.6 # 针对桌面平台和Web，如果你不需要可以不加
   http: ^1.4.0
   
   
