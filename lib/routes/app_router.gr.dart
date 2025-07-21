@@ -21,6 +21,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const AboutPage(),
       );
     },
+    ChatRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const ChatPage(),
+      );
+    },
     DownloadsRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -75,6 +81,19 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const UserInfoPage(),
       );
     },
+    VideoCallRoute.name: (routeData) {
+      final queryParams = routeData.queryParams;
+      final args = routeData.argsAs<VideoCallRouteArgs>(
+          orElse: () =>
+              VideoCallRouteArgs(roomId: queryParams.optString('roomId')));
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: VideoCallScreen(
+          key: args.key,
+          roomId: args.roomId,
+        ),
+      );
+    },
     VideoPlayerFullRoute.name: (routeData) {
       final args = routeData.argsAs<VideoPlayerFullRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -110,6 +129,20 @@ class AboutRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'AboutRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ChatPage]
+class ChatRoute extends PageRouteInfo<void> {
+  const ChatRoute({List<PageRouteInfo>? children})
+      : super(
+          ChatRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'ChatRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
@@ -238,6 +271,45 @@ class UserInfoRoute extends PageRouteInfo<void> {
   static const String name = 'UserInfoRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [VideoCallScreen]
+class VideoCallRoute extends PageRouteInfo<VideoCallRouteArgs> {
+  VideoCallRoute({
+    Key? key,
+    String? roomId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          VideoCallRoute.name,
+          args: VideoCallRouteArgs(
+            key: key,
+            roomId: roomId,
+          ),
+          rawQueryParams: {'roomId': roomId},
+          initialChildren: children,
+        );
+
+  static const String name = 'VideoCallRoute';
+
+  static const PageInfo<VideoCallRouteArgs> page =
+      PageInfo<VideoCallRouteArgs>(name);
+}
+
+class VideoCallRouteArgs {
+  const VideoCallRouteArgs({
+    this.key,
+    this.roomId,
+  });
+
+  final Key? key;
+
+  final String? roomId;
+
+  @override
+  String toString() {
+    return 'VideoCallRouteArgs{key: $key, roomId: $roomId}';
+  }
 }
 
 /// generated route for

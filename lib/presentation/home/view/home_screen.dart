@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 
 import 'package:metaverse_client/presentation/home/view/pages/home_page.dart';
+import 'package:metaverse_client/presentation/home/view/pages/messages_page.dart';
 import 'package:metaverse_client/presentation/home/view/pages/profile_drawer_page.dart';
 import 'package:metaverse_client/presentation/home/view/pages/profile_page.dart';
 
@@ -20,7 +21,7 @@ class _MainPageState extends State<MainScreen> {
     const HomePage(),
     const Center(child: Text('动态页占位')),
     const Center(child: Text('投稿页占位')),
-    const Center(child: Text('消息页占位')),
+    MessagesPage(), // 消息页
     const ProfilePage(), // 个人中心页
   ];
 

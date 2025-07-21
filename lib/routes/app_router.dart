@@ -18,6 +18,8 @@ import 'package:metaverse_client/presentation/home/view/userinfo_screen.dart';
 import 'package:metaverse_client/presentation/home/view/about_screen.dart';
 import 'package:metaverse_client/presentation/videoPlayer/view/videoplay_screen.dart';
 import 'package:metaverse_client/presentation/videoPlayer/view/videoplay_fullscreen.dart';
+import 'package:metaverse_client/presentation/messages/view/chat_screen.dart';
+import 'package:metaverse_client/presentation/call/view/videocall_screen.dart';
 
 // 终端运行 flutter pub run build_runner build
 part 'app_router.gr.dart'; // 这将被自动生成
@@ -42,5 +44,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: RegisterRoute.page, path: '/register'),
         AutoRoute(page: VideoPlayerRoute.page, path: '/videoplayer'),
         AutoRoute(page: VideoPlayerFullRoute.page, path: '/videoplayer/fullscreen'),
+        AutoRoute(page: ChatRoute.page, path: '/chat'), // 聊天页面
+        AutoRoute(page: VideoCallRoute.page, path: '/videocall'), // 视频通话页面
       ];
 }
