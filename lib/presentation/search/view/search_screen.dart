@@ -55,7 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Hide default back button
+        automaticallyImplyLeading: false, // 隐藏默认返回按钮
         title: Row(
           children: [
             IconButton(

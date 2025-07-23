@@ -204,7 +204,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // 播放器区域的背景色
+      backgroundColor: const Color.fromARGB(255, 32, 35, 40), // 播放器区域的背景色
       body: SafeArea(
         child: Column(
           children: [
