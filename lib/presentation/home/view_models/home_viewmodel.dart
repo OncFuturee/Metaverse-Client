@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/video.dart';
-import '../../../domain/usecases/get_videos.dart';
+import '../../../domain/usecases/video_usecases.dart';
 import '../../../injection.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  final GetVideos _getVideos = GetVideos(getIt());
+  final VideoUsecase _videoUsecase = VideoUsecase(getIt());
 
   List<Video> videos = [];
   bool loading = false;
@@ -20,7 +20,7 @@ class HomeViewModel extends ChangeNotifier {
     loading = true;
     notifyListeners();
     currentCategory = category ?? currentCategory;
-    videos = await _getVideos(category: currentCategory);
+    videos = await _videoUsecase.getVideosWithCategory(category: currentCategory);
     loading = false;
     notifyListeners();
   }

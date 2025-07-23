@@ -1,12 +1,12 @@
 import '../entities/video.dart';
 import '../repositories/video_repository.dart';
 
-class GetVideos {
+class VideoUsecase {
   final VideoRepository repository;
 
-  GetVideos(this.repository);
+  VideoUsecase(this.repository);
 
-  Future<List<Video>> call({String category = '推荐'}) {
+  Future<List<Video>> getVideosWithCategory({String category = '推荐'}) {
     return repository.getVideos(category: category);
   }
 }
