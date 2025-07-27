@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/core/config/debug_config.dart';
 import 'package:metaverse_client/presentation/messages/view_models/chat_contact_model.dart';
+import 'package:metaverse_client/routes/app_router.dart';
 
 
 class MessagesPage extends StatelessWidget {
@@ -133,8 +135,8 @@ class MessagesPage extends StatelessWidget {
                       final contact = _recentContacts[index];
                       return GestureDetector(
                         onTap: () {
-                          // **点击最近联系人时，导航到聊天详情页**
-                          context.router.pushNamed('/chat');
+                          // 点击最近联系人时，导航到聊天详情页
+                          context.router.push(ChatRoute());
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -208,8 +210,8 @@ class MessagesPage extends StatelessWidget {
                         ],
                       ),
                       onTap: () {
-                        // **点击消息项时，导航到聊天详情页**
-                        context.router.pushNamed('/chat');
+                        // 点击消息项时，导航到聊天详情页
+                        context.router.push(ChatRoute());
                       },
                     );
                   },

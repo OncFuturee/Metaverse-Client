@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:metaverse_client/utils/colorextractor.dart';
+import 'package:metaverse_client/core/utils/colorextractor.dart';
 
 /// 扩展 Color 类，添加调暗颜色的方法
 extension DarkenColor on Color {

@@ -2,7 +2,9 @@
     <application
         android:label="metaverse_client"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true"> <!-- 需要监听并自定义处理Android设备上的物理返回键事件 -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

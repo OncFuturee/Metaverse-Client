@@ -28,6 +28,11 @@ part 'app_router.gr.dart'; // 这将被自动生成
 class AppRouter extends _$AppRouter {
   final AuthGuard authGuard;
 
+  static GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+  set navigatorKey(GlobalKey<NavigatorState> key) {
+    rootNavigatorKey = key;
+  }
+
   AppRouter({required this.authGuard}); // 构造函数接收守卫实例
 
   @override

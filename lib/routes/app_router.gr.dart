@@ -84,13 +84,19 @@ abstract class _$AppRouter extends RootStackRouter {
     VideoCallRoute.name: (routeData) {
       final queryParams = routeData.queryParams;
       final args = routeData.argsAs<VideoCallRouteArgs>(
-          orElse: () =>
-              VideoCallRouteArgs(roomId: queryParams.optString('roomId')));
+          orElse: () => VideoCallRouteArgs(
+                userId: queryParams.optString('userId'),
+                isCaller: queryParams.getBool(
+                  'isCaller',
+                  false,
+                ),
+              ));
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: VideoCallScreen(
           key: args.key,
-          roomId: args.roomId,
+          userId: args.userId,
+          isCaller: args.isCaller,
         ),
       );
     },
@@ -278,15 +284,20 @@ class UserInfoRoute extends PageRouteInfo<void> {
 class VideoCallRoute extends PageRouteInfo<VideoCallRouteArgs> {
   VideoCallRoute({
     Key? key,
-    String? roomId,
+    String? userId,
+    bool isCaller = false,
     List<PageRouteInfo>? children,
   }) : super(
           VideoCallRoute.name,
           args: VideoCallRouteArgs(
             key: key,
-            roomId: roomId,
+            userId: userId,
+            isCaller: isCaller,
           ),
-          rawQueryParams: {'roomId': roomId},
+          rawQueryParams: {
+            'userId': userId,
+            'isCaller': isCaller,
+          },
           initialChildren: children,
         );
 
@@ -299,16 +310,19 @@ class VideoCallRoute extends PageRouteInfo<VideoCallRouteArgs> {
 class VideoCallRouteArgs {
   const VideoCallRouteArgs({
     this.key,
-    this.roomId,
+    this.userId,
+    this.isCaller = false,
   });
 
   final Key? key;
 
-  final String? roomId;
+  final String? userId;
+
+  final bool isCaller;
 
   @override
   String toString() {
-    return 'VideoCallRouteArgs{key: $key, roomId: $roomId}';
+    return 'VideoCallRouteArgs{key: $key, userId: $userId, isCaller: $isCaller}';
   }
 }
 

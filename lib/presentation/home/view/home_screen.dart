@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:metaverse_client/core/config/debug_config.dart';
+import 'package:metaverse_client/core/services/call/call_notification_manager.dart';
+import 'package:metaverse_client/core/services/websocket/websocket_service.dart';
 
 import 'package:metaverse_client/presentation/home/view/pages/home_page.dart';
 import 'package:metaverse_client/presentation/home/view/pages/messages_page.dart';
 import 'package:metaverse_client/presentation/home/view/pages/profile_drawer_page.dart';
 import 'package:metaverse_client/presentation/home/view/pages/profile_page.dart';
+import 'package:metaverse_client/routes/app_router.dart';
 
 @RoutePage()
 class MainScreen extends StatefulWidget {
@@ -33,6 +37,12 @@ class _MainPageState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 确保在应用启动时设置根导航器的key
+    // 这对于在来电通知等场景中使用Overlay非常重要
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 设置根导航器的key
+      AppRouter.rootNavigatorKey = AutoRouter.of(context).navigatorKey;
+    });
     return Scaffold(
       key: _scaffoldKey,
       drawer: ProfileDrawerPage(onClose: () => Navigator.of(context).pop()),
