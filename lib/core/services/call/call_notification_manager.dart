@@ -1,8 +1,8 @@
 // websocket/call_notification_manager.dart
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:metaverse_client/core/config/debug_config.dart';
 import '../websocket/websocket_service.dart';
 import '../websocket/models/websocket_message.dart';
@@ -20,7 +20,6 @@ class CallNotificationManager {
   }
 
   // 状态变量
-  bool _hasIncomingCall = false;
   String? _callerId;
   Timer? _countdownTimer;
   int _remainingSeconds = 30;
@@ -41,6 +40,21 @@ class CallNotificationManager {
     });
   }
 
+  // 新增：用来存储UI层传入的BuildContext，但更推荐每次调用时传入
+  // 注意：不建议直接保存BuildContext，因为它可能变得无效。
+  // 更好的方式是每次需要显示时，由UI层提供。
+  BuildContext? _uiContextForOverlay;
+
+  // 提供一个方法让UI层设置当前的BuildContext
+  void setContextForOverlay(BuildContext context) {
+    _uiContextForOverlay = context;
+  }
+
+  // 在不再需要时清除context
+  void clearContextForOverlay() {
+    _uiContextForOverlay = null;
+  }
+
   // 处理来电通知
   void _handleIncomingCall(WebSocketMessage message) {
     final data = message.data as Map<String, dynamic>?;
@@ -48,36 +62,44 @@ class CallNotificationManager {
     // 只处理 type 为 call_request 的来电
     if (data['type'] == 'call_request' && data['caller_userid'] != null && data['callee_userid'] != null) {
       _callerId = data['caller_userid'];
-      _hasIncomingCall = true;
       _remainingSeconds = 30;
       _callStateNotifier.value = CallState.incoming;
-      _showCallNotification();
+      // 检查是否有可用的BuildContext
+      if (_uiContextForOverlay != null) {
+        _showCallNotification(_uiContextForOverlay!); // 传入Context
+      } else {
+        debugPrint('错误： 没有可用的 UI 上下文来显示call notification overlay.');
+        // 可以在这里触发一个本地通知，作为备用方案
+      }
       _startCountdown();
     }
   }
 
   // 显示来电通知弹窗
-  void _showCallNotification() {
+  void _showCallNotification(BuildContext context) { 
     if (_overlayEntry != null) return;
 
     _overlayEntry = OverlayEntry(
       builder:
-          (context) => CallNotificationOverlay(
+          (overlayContext) => CallNotificationOverlay( // 注意这里是 overlayContext
             callerId: _callerId ?? '未知用户',
             remainingSeconds: _remainingSeconds,
-            onAnswer: _answerCall,
+            onAnswer: (ctx) { // onAnswer 接收的 context 是 OverlayEntry 内部的 context
+              _answerCall(ctx); // 将 OverlayEntry 内部的 context 传递给 _answerCall
+            },
             onReject: _rejectCall,
-            countdownNotifier: ValueNotifier(_remainingSeconds),
+            countdownNotifier: ValueNotifier(_remainingSeconds), // 考虑使用外部共享的ValueNotifier
           ),
     );
 
-    // 获取根Overlay并插入弹窗
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final overlay = Overlay.of(
-        AppRouter.rootNavigatorKey.currentContext!,
-      );
-      overlay?.insert(_overlayEntry!);
-    });
+    // 使用传入的context插入弹窗
+    try {
+      debugPrint("插入弹窗。");
+      Overlay.of(context).insert(_overlayEntry!);
+    } catch (e) {
+      debugPrint('插入 OverlayEntry 时出错: $e');
+      _overlayEntry = null; // 插入失败则清除
+    }
   }
 
   // 开始30秒倒计时
@@ -96,23 +118,24 @@ class CallNotificationManager {
 
   // 接听电话
   void _answerCall(BuildContext context) {
-    _cleanup();
     // 通知服务器已接听
     _sendCallResponse('accepted');
     // 导航到视频通话界面（作为接听方）
     context.pushRoute(VideoCallRoute(userId: _callerId, isCaller: false));
+
+    _cleanup();
   }
 
   // 挂断电话
   void _rejectCall() {
-    _cleanup();
     _sendCallResponse('rejected');
+    _cleanup();
   }
 
   // 自动挂断（无应答）
   void _autoRejectCall() {
-    _cleanup();
     _sendCallResponse('no_answer');
+    _cleanup();
   }
 
   // 发送通话响应到服务器
@@ -128,16 +151,20 @@ class CallNotificationManager {
   // 清理资源
   void _cleanup() {
     _countdownTimer?.cancel();
-    _overlayEntry?.remove();
+    // 确保在 dispose 或 cleanup 时移除OverlayEntry
+    if (_overlayEntry != null && _overlayEntry!.mounted) {
+      _overlayEntry!.remove();
+    }
     _overlayEntry = null;
-    _hasIncomingCall = false;
     _callerId = null;
     _callStateNotifier.value = CallState.idle;
+    // 不在这里清除_uiContextForOverlay，因为它可能在整个应用生命周期中有效
   }
 
-  // 主动关闭弹窗（如应用退出时）
+  // 主动关闭弹窗（如应用退出时），并清理context
   void dispose() {
     _cleanup();
+    clearContextForOverlay(); // 在应用生命周期结束时清理
   }
 }
 

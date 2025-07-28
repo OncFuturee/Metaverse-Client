@@ -12,7 +12,7 @@ class DebugConfig {
   static DebugConfig get instance => _instance;
 
   // 4. 存储调试参数的Map
-  Map<String, dynamic> _params = {};
+  Map<String, dynamic> _params = {"userId":"test"};
 
   // 5. 获取参数的方法
   Map<String, dynamic> get params => _params;
@@ -20,7 +20,7 @@ class DebugConfig {
   // 6. 异步加载数据的方法
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonData = prefs.getString('debug_params') ?? '{}';
+    final jsonData = prefs.getString('debug_params') ?? json.encode({"userId":"test"});
     try {
       _params = json.decode(jsonData) as Map<String, dynamic>;
     } catch (e) {

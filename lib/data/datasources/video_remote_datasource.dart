@@ -5,15 +5,12 @@ import 'package:flutter/foundation.dart'; // 导入 foundation 包用于 debugPr
 import '../models/video_model.dart'; // 导入 VideoModel 类
 
 class VideoRemoteDataSource {
-  final String baseUrl = 'https://cn.pornhub.com'; // 基础URL，用于视频数据源
+  final String baseUrl = 'https://cn.abc.com'; // 基础URL，用于视频数据源
   /// 模拟从远程数据源获取视频列表
   /// [category] 参数用于指定视频分类，默认为 '推荐'
   Future<List<VideoModel>> fetchVideos({String category = '推荐'}) async {
-    // 模拟网络延迟，让数据加载看起来更真实
-    await Future.delayed(const Duration(milliseconds: 400));
 
     // 调用 fetchAndMatchWebData 方法获取并匹配网页数据
-    // 注意：这里的 URL "https://cn.pornhub.com/" 仅用于演示，实际应用中请替换为合法且可访问的视频源
     List<VideoModel> fetchedVideos = await fetchAndMatchWebData(baseUrl);
 
     // 如果从网页抓取到数据，则返回抓取到的数据

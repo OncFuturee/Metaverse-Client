@@ -65,6 +65,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     } else {
       _callerUserId = widget.userId;
       _calleeUserId = DebugConfig.instance.params['userId'];
+      _createAndSendOffer();
     }
   }
 
@@ -127,21 +128,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     });
   }
 
-  // 发送接听/拒绝/结束等信令
-  void _sendCallAccept() {
-    _webSocketService.sendMessage('video_call', {
-      'type': 'call_accept',
-      'caller_userid': _callerUserId,
-      'callee_userid': _calleeUserId,
-    });
-  }
-  void _sendCallReject() {
-    _webSocketService.sendMessage('video_call', {
-      'type': 'call_reject',
-      'caller_userid': _callerUserId,
-      'callee_userid': _calleeUserId,
-    });
-  }
+  // 发送结束信令
   void _sendCallEndMessage() {
     _isCallEnded = true;
     _webSocketService.sendMessage('video_call', {
@@ -187,7 +174,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     if (data['caller_userid'] != _callerUserId || data['callee_userid'] != _calleeUserId) return;
     switch (data['type']) {
       case 'call_accept':
-        if (widget.isCaller) {
+        if (widget.isCaller) { // 被叫方在接受后 呼叫方创建 Offer
           setState(() { _isCallAccepted = true; });
           _createAndSendOffer();
         }
@@ -198,7 +185,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         break;
       case 'call_end':
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('通话已结束')));
-        _endCall();
+        _handleCallEnd();
         break;
       case 'rtc_offer':
         if (!widget.isCaller) {
@@ -222,7 +209,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _peerConnection = await createPeerConnection(
       {
         'iceServers': [
-          {'url': 'stun:stun.l.google.com:19302'},
           {'url': 'stun:124.222.83.66:3478'},
           {
             'url': 'turn:124.222.83.66:3478',
@@ -239,7 +225,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _localStream?.getTracks().forEach((track) {
       _peerConnection?.addTrack(track, _localStream!);
     });
+    // 自动通过 STUN/TURN 服务器收集本地网络信息（如本地 IP、公网 IP 等）。
+    // 每生成一个有效的候选者，onIceCandidate 就会被触发，并传入该候选者对象（RTCIceCandidate）
     _peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
+      debugPrint("发送候选者");
       _sendRtcIceCandidate(candidate.toMap());
     };
     _peerConnection?.onAddStream = (MediaStream stream) {
@@ -283,6 +272,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   Future<void> _createAndSendOffer() async {
     if (_peerConnection == null) return;
     try {
+      debugPrint("创建Offer");
       RTCSessionDescription offer = await _peerConnection!.createOffer({
         'offerToReceiveVideo': 1,
         'offerToReceiveAudio': 1,

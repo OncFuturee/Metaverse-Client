@@ -37,12 +37,9 @@ class _MainPageState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 确保在应用启动时设置根导航器的key
-    // 这对于在来电通知等场景中使用Overlay非常重要
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 设置根导航器的key
-      AppRouter.rootNavigatorKey = AutoRouter.of(context).navigatorKey;
-    });
+    // 由于Overlay的特性，它需要的context必须有一个拥有Overlay的父级widget
+    CallNotificationManager().setContextForOverlay(context);
+
     return Scaffold(
       key: _scaffoldKey,
       drawer: ProfileDrawerPage(onClose: () => Navigator.of(context).pop()),
