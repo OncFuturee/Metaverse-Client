@@ -119,7 +119,10 @@ class CallNotificationManager {
   // 接听电话
   void _answerCall(BuildContext context) {
     // 通知服务器已接听
-    _sendCallResponse('accepted');
+    // 由于通话界面需要对webrtc进行初始化，此时客户端还没有准备好
+    // 接听电话，所以将通知服务器已接听的逻辑放在视频通话界面中处理
+    // 这里可以直接导航到视频通话界面
+
     // 导航到视频通话界面（作为接听方）
     context.pushRoute(VideoCallRoute(userId: _callerId, isCaller: false));
 
@@ -142,7 +145,7 @@ class CallNotificationManager {
   void _sendCallResponse(String status) {
     // status: accepted/rejected/no_answer
     WebSocketService().sendMessage('video_call', {
-      'type': status == 'accepted' ? 'call_accept' : (status == 'rejected' ? 'call_reject' : 'no_answer'),
+      'type': status == 'rejected' ? 'call_reject' : 'no_answer',
       'caller_userid': _callerId,
       'callee_userid': DebugConfig.instance.params['userId'],
     });
