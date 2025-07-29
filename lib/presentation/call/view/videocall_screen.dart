@@ -139,6 +139,43 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     });
   }
 
+  // 信令消息处理
+  void _handleSignalingMessage(WebSocketMessage message) {
+    final data = message.data as Map<String, dynamic>?;
+    if (data == null) return;
+    // 只处理与本通话相关的消息
+    if (data['caller_userid'] != _callerUserId || data['callee_userid'] != _calleeUserId) return;
+    switch (data['type']) {
+      case 'call_accept': // 对方接听电话
+        if (widget.isCaller) {
+          setState(() { _isCallAccepted = true; });
+          _createAndSendOffer();
+        }
+        break;
+      case 'call_reject': // 对方拒绝电话
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('对方已拒绝通话')));
+        _endCall();
+        break;
+      case 'call_end': // 对方结束通话
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('通话已结束')));
+        _handleCallEnd();
+        break;
+      case 'rtc_offer': // 收到呼叫方发来的Offer
+        if (!widget.isCaller) {
+          _handleOffer(data['sdp'], data['sdp_type']);
+        }
+        break;
+      case 'rtc_answer': // 收到接听方发来的Answer
+        if (widget.isCaller) {
+          _handleAnswer(data['sdp'], data['sdp_type']);
+        }
+        break;
+      case 'rtc_ice_candidate': // 收到对方的ICE候选
+        _handleIceCandidate(data['candidate']);
+        break;
+    }
+  }
+
   // 发送呼叫请求
   void _sendCallRequest() {
     if (_callerUserId == null || _calleeUserId == null) return;
@@ -187,43 +224,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     });
   }
 
-  // 信令消息处理
-  void _handleSignalingMessage(WebSocketMessage message) {
-    final data = message.data as Map<String, dynamic>?;
-    if (data == null) return;
-    // 只处理与本通话相关的消息
-    if (data['caller_userid'] != _callerUserId || data['callee_userid'] != _calleeUserId) return;
-    switch (data['type']) {
-      case 'call_accept': // 对方接听电话
-        if (widget.isCaller) {
-          setState(() { _isCallAccepted = true; });
-          _createAndSendOffer();
-        }
-        break;
-      case 'call_reject': // 对方拒绝电话
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('对方已拒绝通话')));
-        _endCall();
-        break;
-      case 'call_end': // 对方结束通话
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('通话已结束')));
-        _handleCallEnd();
-        break;
-      case 'rtc_offer': // 收到呼叫方发来的Offer
-        if (!widget.isCaller) {
-          _handleOffer(data['sdp'], data['sdp_type']);
-        }
-        break;
-      case 'rtc_answer': // 收到接听方发来的Answer
-        if (widget.isCaller) {
-          _handleAnswer(data['sdp'], data['sdp_type']);
-        }
-        break;
-      case 'rtc_ice_candidate': // 收到对方的ICE候选
-        _handleIceCandidate(data['candidate']);
-        break;
-    }
-  }
-
   // WebRTC初始化
   Future<void> _initWebRTC() async {
     await _getUserMedia();
@@ -255,8 +255,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       // 如果是接听方，直接发送ICE候选者
       if (widget.isCaller) {
         _iceCandidates.add(candidate); // 收集到的候选者需要在收到接听方的Offer Answer后发送
+        debugPrint("呼叫方-收集本地ICE候选：${candidate.toMap().toString()}");
       } else {
         _sendRtcIceCandidate(candidate.toMap());
+        debugPrint("接听方-发送本地ICE候选：${candidate.toMap().toString()}");
       }
     };
     _peerConnection?.onAddStream = (MediaStream stream) {
@@ -292,6 +294,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   }
 
   Future<void> _getUserMedia() async {
+    debugPrint("获取UserMedia...");
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
       'video': {'facingMode': 'user'},
@@ -308,12 +311,12 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   // 创建并发送Offer
   Future<void> _createAndSendOffer() async {
+      debugPrint("创建Offer并发送");
     if (_peerConnection == null) {
       debugPrint("PeerConnection未初始化");
       return;
     }
     try {
-      debugPrint("创建Offer");
       RTCSessionDescription offer = await _peerConnection!.createOffer({
         'offerToReceiveVideo': 1,
         'offerToReceiveAudio': 1,
@@ -327,6 +330,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   // 处理Offer
   Future<void> _handleOffer(String sdp, String type) async {
+    debugPrint("接听方-处理Offer请求:sdp=$sdp,type=$type");
     if (_peerConnection == null) {
       debugPrint("PeerConnection未初始化");
       return;
@@ -336,6 +340,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       RTCSessionDescription answer = await _peerConnection!.createAnswer();
       await _peerConnection!.setLocalDescription(answer);
       _sendRtcAnswer(answer.sdp ?? '', answer.type ?? '');
+      debugPrint("接听方-发送Offer Answer:sdp=$sdp,type=$type");
     } catch (e) {
       // ...异常处理...
     }
@@ -343,6 +348,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   // 处理Answer
   Future<void> _handleAnswer(String sdp, String type) async {
+    debugPrint("呼叫方-处理接听方的Offer Answer:sdp=$sdp,type=$type");
     if (_peerConnection == null) {
       debugPrint("_handleAnswer:PeerConnection未初始化");
       return;
@@ -352,7 +358,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       // 向接听方发送之前收集的ICE候选者
       for (var candidate in _iceCandidates) {
         _sendRtcIceCandidate(candidate.toMap());
-        debugPrint("发送ICE候选者: ${candidate.toMap()}");
+        debugPrint("呼叫方-发送本地ICE候选者: ${candidate.toMap()}");
       }
     } catch (e) {
       // ...异常处理...
@@ -376,7 +382,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         candidate['sdpMid'],
         candidate['sdpMLineIndex'],
       ));
-      debugPrint("添加ICE候选者: $candidate");
+      debugPrint("添加远程ICE候选者: $candidate");
     } catch (e) {
       // ...异常处理...
     }
