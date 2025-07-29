@@ -138,6 +138,19 @@
 ```
 - 服务端响应（转发给对方）同上
 
+#### 4.4 发送 Handled Answer
+- 客户端 → 服务端
+```json
+{
+  "type": "video_call",
+  "data": {
+    "type": "handled_answer",
+    "caller_userid": "username1",
+    "callee_userid": "username2"
+  }
+}
+```
+
 ## 其它说明
 - 所有信令消息都通过 WebSocket 发送和接收。
 - 服务端需根据 caller_userid/callee_userid 字段进行消息路由。
@@ -145,3 +158,23 @@
 
 ---
 如需扩展其它信令类型，建议保持 type 字段风格一致。
+
+## WebRTC 的信令流程通常是：
+
+呼叫方 创建 Offer (createOffer)。
+
+呼叫方 设置本地描述 (setLocalDescription)。
+
+呼叫方 将 Offer 通过信令服务器发送给接听方。
+
+接听方 收到 Offer 后，设置远程描述 (setRemoteDescription)。
+
+接听方 创建 Answer (createAnswer)。
+
+接听方 设置本地描述 (setLocalDescription)。
+
+接听方 将 Answer 通过信令服务器发送给呼叫方。
+
+呼叫方 收到 Answer 后，设置远程描述 (setRemoteDescription)。
+
+双方 在设置完本地和远程描述后，开始交换 ICE 候选者。
