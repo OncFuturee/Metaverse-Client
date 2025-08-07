@@ -1,11 +1,12 @@
 import 'dart:math';
 import 'package:http/http.dart' as http; // 导入 http 包，用于网络请求
 import 'package:flutter/foundation.dart'; // 导入 foundation 包用于 debugPrint，在调试模式下打印日志
+import 'package:metaverse_client/core/config/debug_config.dart';
 
 import '../models/video_model.dart'; // 导入 VideoModel 类
 
 class VideoRemoteDataSource {
-  final String baseUrl = 'https://cn.abc.com'; // 基础URL，用于视频数据源
+  final String baseUrl = DebugConfig.instance.params['videoUrl'] ?? 'https://cn.abc.com'; // 基础URL，用于视频数据源
   /// 模拟从远程数据源获取视频列表
   /// [category] 参数用于指定视频分类，默认为 '推荐'
   Future<List<VideoModel>> fetchVideos({String category = '推荐'}) async {
