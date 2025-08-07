@@ -173,6 +173,14 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       case 'rtc_ice_candidate': // 收到对方的ICE候选
         _handleIceCandidate(data['candidate']);
         break;
+      case 'handled_answer': // 呼叫方已处理Answer，接听方可以开始发送ICE候选
+        if (!widget.isCaller) {
+          for (var candidate in _iceCandidates) {
+            _sendRtcIceCandidate(candidate.toMap());
+            debugPrint("接听方-发送本地ICE候选者: ${candidate.toMap()}");
+          }
+        }
+        break;
     }
   }
 
@@ -206,6 +214,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       'sdp_type': type,
     });
   }
+  /// 发送Answer信令
   void _sendRtcAnswer(String sdp, String type) {
     _webSocketService.sendMessage('video_call', {
       'type': 'rtc_answer',
@@ -215,12 +224,21 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       'sdp_type': type,
     });
   }
+  /// 发送ICE候选者
   void _sendRtcIceCandidate(Map<String, dynamic> candidate) {
     _webSocketService.sendMessage('video_call', {
       'type': 'rtc_ice_candidate',
       'caller_userid': _callerUserId,
       'callee_userid': _calleeUserId,
       'candidate': candidate,
+    });
+  }
+  /// 发送已处理的Answer信令
+  void _sendHandledAnswer() {
+    _webSocketService.sendMessage('video_call', {
+      'type': 'handled_answer',
+      'caller_userid': _callerUserId,
+      'callee_userid': _calleeUserId,
     });
   }
 
@@ -251,15 +269,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     // 自动通过 STUN/TURN 服务器收集本地网络信息（如本地 IP、公网 IP 等）。
     // 每生成一个有效的候选者，onIceCandidate 就会被触发，并传入该候选者对象（RTCIceCandidate）
     _peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
-      // 如果是呼叫方，先收集ICE候选者，等接听方准备好后再发送
-      // 如果是接听方，直接发送ICE候选者
-      if (widget.isCaller) {
-        _iceCandidates.add(candidate); // 收集到的候选者需要在收到接听方的Offer Answer后发送
-        debugPrint("呼叫方-收集本地ICE候选：${candidate.toMap().toString()}");
-      } else {
-        _sendRtcIceCandidate(candidate.toMap());
-        debugPrint("接听方-发送本地ICE候选：${candidate.toMap().toString()}");
-      }
+      // 收集ICE候选者，等双方都设置好了远程描述和本地描述后再发送
+      _iceCandidates.add(candidate);
+      debugPrint("收集本地ICE候选：${candidate.toMap().toString()}");
     };
     _peerConnection?.onAddStream = (MediaStream stream) {
       debugPrint("添加远程流");
@@ -321,7 +333,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         'offerToReceiveVideo': 1,
         'offerToReceiveAudio': 1,
       });
-      await _peerConnection!.setLocalDescription(offer);
+      await _peerConnection!.setLocalDescription(offer); // 呼叫方设置本地描述
       _sendRtcOffer(offer.sdp ?? '', offer.type ?? '');
     } catch (e) {
       // ...异常处理...
@@ -336,9 +348,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       return;
     }
     try {
-      await _peerConnection!.setRemoteDescription(RTCSessionDescription(sdp, type));
+      await _peerConnection!.setRemoteDescription(RTCSessionDescription(sdp, type)); // 接听方设置远程描述
       RTCSessionDescription answer = await _peerConnection!.createAnswer();
-      await _peerConnection!.setLocalDescription(answer);
+      await _peerConnection!.setLocalDescription(answer); // 接听方设置本地描述
       _sendRtcAnswer(answer.sdp ?? '', answer.type ?? '');
       debugPrint("接听方-发送Offer Answer:sdp=$sdp,type=$type");
     } catch (e) {
@@ -354,12 +366,14 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       return;
     }
     try {
-      await _peerConnection!.setRemoteDescription(RTCSessionDescription(sdp, type));
+      await _peerConnection!.setRemoteDescription(RTCSessionDescription(sdp, type)); // 呼叫方设置远程描述
       // 向接听方发送之前收集的ICE候选者
       for (var candidate in _iceCandidates) {
         _sendRtcIceCandidate(candidate.toMap());
         debugPrint("呼叫方-发送本地ICE候选者: ${candidate.toMap()}");
       }
+      // 通知接听方Answer已处理，可以开始发送ICE候选了
+      _sendHandledAnswer();
     } catch (e) {
       // ...异常处理...
     }
