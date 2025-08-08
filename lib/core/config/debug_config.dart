@@ -1,15 +1,16 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DebugConfig {
+class AppConfig {
   // 1. 私有构造函数，防止直接实例化
-  DebugConfig._privateConstructor();
+  AppConfig._privateConstructor();
 
   // 2. 静态实例，实现单例模式
-  static final DebugConfig _instance = DebugConfig._privateConstructor();
+  static final AppConfig _instance = AppConfig._privateConstructor();
 
   // 3. 全局访问点
-  static DebugConfig get instance => _instance;
+  static AppConfig get instance => _instance;
 
   // 4. 存储调试参数的Map
   Map<String, dynamic> _params = {"userId":"test","videoUrl":"https://cn.abc.com"};
@@ -28,7 +29,7 @@ class DebugConfig {
       }
     } catch (e) {
       _params = {};
-      print('错误解码调试参数: $e');
+      debugPrint('错误解码调试参数: $e');
     }
   }
 }

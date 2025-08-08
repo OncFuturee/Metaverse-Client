@@ -30,7 +30,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
 
   Future<void> _loadJsonData() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonData = prefs.getString('debug_params') ?? json.encode(DebugConfig.instance.params);
+    final jsonData = prefs.getString('debug_params') ?? json.encode(AppConfig.instance.params);
     _jsonController.text = _formatJson(jsonData);
   }
 

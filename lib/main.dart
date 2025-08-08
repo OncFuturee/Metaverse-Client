@@ -19,7 +19,7 @@ import 'package:metaverse_client/presentation/home/view_models/userinfo_viewmode
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保Flutter引擎已初始化
-  await DebugConfig.instance.load();// 加载调试参数
+  await AppConfig.instance.load();// 加载调试参数
   MediaKit.ensureInitialized(); // 初始化 media_kit
   await configureDependencies(); // 配置依赖注入
 
@@ -31,7 +31,7 @@ void main() async {
     WebSocketService().addStatusListener((status) {
       if (status == WebSocketStatus.connected) {
         // 连接成功后发送身份验证消息
-        WebSocketService().sendMessage('auth', {'userId': DebugConfig.instance.params['userId']});
+        WebSocketService().sendMessage('auth', {'userId': AppConfig.instance.params['userId']});
       }
     });
     CallNotificationManager();// 初始化来电管理器
