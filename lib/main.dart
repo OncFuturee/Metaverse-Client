@@ -27,7 +27,7 @@ void main() async {
   /// 我们在这里延迟初始化WebSocket服务和来电管理器。
   // 这将确保在应用程序启动时不会立即连接WebSocket。
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    WebSocketService().connect('ws://124.222.83.66:8023/ws'); // 初始化 WebSocket 服务
+    WebSocketService().connect('wss://genchrunner.cn:8023/ws'); // 初始化 WebSocket 服务
     WebSocketService().addStatusListener((status) {
       if (status == WebSocketStatus.connected) {
         // 连接成功后发送身份验证消息
