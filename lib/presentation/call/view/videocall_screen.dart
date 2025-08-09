@@ -75,18 +75,18 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         WebSocketService().sendMessage('video_call', {
           'type': 'call_accept',
           'caller_userid': widget.userId,
-          'callee_userid': DebugConfig.instance.params['userId'],
+          'callee_userid': AppConfig.instance.params['userId'],
         });
       }
     });
 
     // 设置呼叫双方的用户ID
     if (widget.isCaller) {
-      _callerUserId = DebugConfig.instance.params['userId'];
+      _callerUserId = AppConfig.instance.params['userId'];
       _calleeUserId = widget.userId;
     } else {
       _callerUserId = widget.userId;
-      _calleeUserId = DebugConfig.instance.params['userId'];
+      _calleeUserId = AppConfig.instance.params['userId'];
     }
   }
 

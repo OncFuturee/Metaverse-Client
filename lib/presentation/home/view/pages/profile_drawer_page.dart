@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:metaverse_client/core/config/debug_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileDrawerPage extends StatefulWidget {
@@ -29,7 +30,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
 
   Future<void> _loadJsonData() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonData = prefs.getString('debug_params') ?? '{"userId": "web"}';
+    final jsonData = prefs.getString('debug_params') ?? json.encode(AppConfig.instance.params);
     _jsonController.text = _formatJson(jsonData);
   }
 

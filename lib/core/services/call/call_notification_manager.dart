@@ -147,7 +147,7 @@ class CallNotificationManager {
     WebSocketService().sendMessage('video_call', {
       'type': status == 'rejected' ? 'call_reject' : 'no_answer',
       'caller_userid': _callerId,
-      'callee_userid': DebugConfig.instance.params['userId'],
+      'callee_userid': AppConfig.instance.params['userId'],
     });
   }
 
