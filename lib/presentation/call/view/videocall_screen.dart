@@ -248,11 +248,11 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _peerConnection = await createPeerConnection(
       {
         'iceServers': [
-          {'url': 'stun:124.222.83.66:3478'},
+          {'url': 'stun:genchrunner.cn:5349'},
           {
-            'url': 'turn:124.222.83.66:3478',
-            'username': 'your_username',
-            'credential': 'your_password',
+            'url': 'turn:genchrunner:5349',
+            'username': '123456',
+            'credential': '123456',
           },
         ],
       },
@@ -273,12 +273,16 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       _iceCandidates.add(candidate);
       debugPrint("收集本地ICE候选：${candidate.toMap().toString()}");
     };
-    _peerConnection?.onAddStream = (MediaStream stream) {
-      debugPrint("添加远程流");
-      setState(() {
-        _remoteStream = stream;
-        _remoteRenderer.srcObject = _remoteStream;
-      });
+    // 当远程轨道被添加时触发
+    // onAddStream 已经被弃用，建议使用 onTrack
+    _peerConnection?.onTrack = (RTCTrackEvent event) {
+      debugPrint("收到远程轨道: ${event.track.kind}");
+      if (event.streams.isNotEmpty) {
+        setState(() {
+          _remoteStream = event.streams[0];
+          _remoteRenderer.srcObject = _remoteStream;
+        });
+      }
     };
     _peerConnection?.onIceConnectionState = (RTCIceConnectionState state) {
       setState(() {
