@@ -34,12 +34,49 @@ lib/
 ├── main.dart                      # 应用入口 
 └── injection.dart                 # 依赖注入配置 
 ``` 
+# 🚀 运行与构建方法
+
+## 环境准备
+在运行和构建项目前，请确保已经安装以下开发环境：
+- Flutter SDK（建议使用最新稳定版）
+- Dart SDK（随 Flutter 一起安装）
+- 对应平台的开发工具：
+  - Android：Android Studio 和 Android SDK
+  - iOS：Xcode（仅 macOS）
+  - Web：现代浏览器（Chrome、Firefox 等）
+
+可通过以下命令检查 Flutter 环境：
+```bash
+flutter doctor
+```
+该命令会检查 Flutter SDK、Dart SDK、Android Studio/Xcode、Android/iOS 开发环境等，并输出检查结果。
+
+## 运行项目
+在项目根目录下，使用以下命令运行 Flutter 应用：
+```bash
+flutter run
+```
+该命令会根据当前平台（Android、iOS 或 Web）启动应用。
+
+## 构建项目
+在项目根目录下，使用以下命令构建 Flutter 应用：
+```bash
+flutter build <platform>
+```
+其中 `<platform>` 可以是 `android`、`ios` 或 `web`，根据需要构建对应平台的应用。
+构建完成后，会在 `build/` 目录下生成对应的应用包或 Web 资源。
+- Android：在 `build/app/outputs/apk/` 目录下。
+- iOS：在 `build/ios/Release/` 目录下。
+- Web：在 `build/web/` 目录下。
+
+
 # 🧩 架构设计原则
 * 分层架构：采用 Clean Architecture，将应用分为数据层、领域层和表现层，确保各层职责清晰，便于维护和扩展。
 * 依赖注入：使用依赖注入（如 get_it、injectable）管理依赖关系，提升模块的可测试性和可替换性。
 * 状态管理：根据项目复杂度选择合适的状态管理方案，如 Provider。
 * 响应式编程：利用 Dart 的 Stream 和 Future 实现响应式编程，提升应用的响应能力。
 * 模块化开发：将功能模块划分为独立的包或模块，提升代码复用性和团队协作效率。
+
 # 🎯 功能模块建议
 1. 用户管理模块
 * 注册/登录：支持手机号、邮箱、第三方登录（如微信、Facebook 等）。
